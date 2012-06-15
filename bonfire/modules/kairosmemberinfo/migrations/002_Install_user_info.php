@@ -4,6 +4,8 @@ class Migration_Install_user_info extends Migration {
 
 	public function up()
 	{
+		$this->pre_setup_table();
+		
 		$prefix = $this->db->dbprefix;
 
 		$fields = array(
@@ -38,10 +40,10 @@ class Migration_Install_user_info extends Migration {
 				'default' => '0000-00-00',
 				
 			),
-			'kairosmemberinfo_nationality_id' => array(
+			'kairosmemberinfo_nationalityID' => array(
 				'type' => 'INT',
 				'constraint' => 8,
-				
+				'unsigned' => TRUE
 			),
 			'kairosmemberinfo_gender' => array(
 				'type' => 'enum',
@@ -51,7 +53,7 @@ class Migration_Install_user_info extends Migration {
 			'kairosmemberinfo_UniversityID' => array(
 				'type' => 'INT',
 				'constraint' => 8,
-				
+				'unsigned' => TRUE
 			),
 			'kairosmemberinfo_yearOfStudy' => array(
 				'type' => 'enum',
@@ -83,17 +85,25 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->add_key(array('entry_id','uid'));
 		$this->dbforge->create_table('user_info');
 		
-		/* Edit the table to link bf_user_info.id with bf_users.id */
-		$query = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES  `KairosDatabase`.`bf_users` (
-		`id`) ON DELETE CASCADE";
+		/* Link bf_user_info.uid with bf_users.id */
+		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES  `KairosDatabase`.`bf_users` 
+		(`id`) ON DELETE CASCADE";
 		
-		$query = $this->db->query($query);
-		if (!($query))
-		{
-			show_error('message' , 500);
+		/* Link bf_user_info.nationalityID with bf_country.nid */
+		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_nationalityID` ) REFERENCES  
+		`KairosDatabase`.`bf_country` (`nid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		
+		/* Link bf_user_info.UniversityID with bf_university.uid */
+		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_UniversityID` ) REFERENCES 
+		`KairosDatabase`.`bf_university` (`uid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		
+		/* execute all queries */
+		foreach ($queries as $query) {
+			$result = $this->db->query($query);
+			if (!$result) {
+				show_error('Fail to install' , 500);
+			}
 		}
-		
-		
 
 	}
 
