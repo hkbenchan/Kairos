@@ -1,3 +1,4 @@
+<!-- Developer -->
 <div class="admin-box">
 	<h3>KairosMemberInfo</h3>
 	<?php echo form_open($this->uri->uri_string()); ?>
@@ -7,7 +8,6 @@
 					<?php if ($this->auth->has_permission('KairosMemberInfo.Developer.Delete') && isset($records) && is_array($records) && count($records)) : ?>
 					<th class="column-check"><input class="check-all" type="checkbox" /></th>
 					<?php endif;?>
-					
 					<th>Surname</th>
 					<th>Middle Name</th>
 					<th>Last name</th>
