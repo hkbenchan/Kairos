@@ -13,3 +13,11 @@ ERROR - 2012-06-16 15:58:52 --> Severity: 4096  --> Object of class stdClass cou
 ERROR - 2012-06-16 15:58:52 --> Severity: 4096  --> Object of class stdClass could not be converted to string /Applications/MAMP/htdocs/bonfire/modules/kairosmemberinfo/views/content/create.php 72
 ERROR - 2012-06-16 15:59:30 --> Severity: Warning  --> Cannot modify header information - headers already sent by (output started at /Applications/MAMP/htdocs/bonfire/modules/kairosmemberinfo/controllers/content.php:103) /Applications/MAMP/htdocs/bonfire/codeigniter/libraries/Session.php 672
 ERROR - 2012-06-16 16:01:23 --> Severity: Warning  --> Cannot modify header information - headers already sent by (output started at /Applications/MAMP/htdocs/bonfire/modules/kairosmemberinfo/controllers/content.php:103) /Applications/MAMP/htdocs/bonfire/codeigniter/libraries/Session.php 672
+ERROR - 2012-06-16 17:16:44 --> Severity: Notice  --> Undefined property: Emailer::$config /Applications/MAMP/htdocs/bonfire/application/core_modules/emailer/libraries/Emailer.php 267
+ERROR - 2012-06-16 17:16:44 --> Severity: Warning  --> Invalid argument supplied for foreach() /Applications/MAMP/htdocs/bonfire/codeigniter/libraries/Email.php 112
+ERROR - 2012-06-16 17:18:48 --> Severity: Notice  --> Undefined property: Emailer::$config /Applications/MAMP/htdocs/bonfire/application/core_modules/emailer/libraries/Emailer.php 267
+ERROR - 2012-06-16 17:18:48 --> Severity: Warning  --> Invalid argument supplied for foreach() /Applications/MAMP/htdocs/bonfire/codeigniter/libraries/Email.php 112
+ERROR - 2012-06-16 17:18:56 --> Severity: Notice  --> Undefined property: Emailer::$config /Applications/MAMP/htdocs/bonfire/application/core_modules/emailer/libraries/Emailer.php 267
+ERROR - 2012-06-16 17:18:56 --> Severity: Warning  --> Invalid argument supplied for foreach() /Applications/MAMP/htdocs/bonfire/codeigniter/libraries/Email.php 112
+ERROR - 2012-06-16 23:31:27 --> Severity: Notice  --> Undefined variable: radio_box_ownVentureT /Applications/MAMP/htdocs/bonfire/modules/kairosmemberinfo/views/content/create.php 180
+ERROR - 2012-06-16 23:31:27 --> Severity: Notice  --> Undefined variable: radio_box_ownVentureF /Applications/MAMP/htdocs/bonfire/modules/kairosmemberinfo/views/content/create.php 182

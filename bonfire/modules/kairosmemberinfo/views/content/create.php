@@ -52,11 +52,12 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
         <div class="control-group <?php echo form_error('kairosmemberinfo_dob') ? 'error' : ''; ?>">
             <?php echo form_label('Date Of Birth (DD/MM/YYYY)'. lang('bf_form_label_required'), 'kairosmemberinfo_dob', array('class' => "control-label") ); ?>
         <div class='controls'>
-        <input id="kairosmemberinfo_dob_d" type="text" name="kairosmemberinfo_dob_d" maxlength="2" value="<?php echo set_value('kairosmemberinfo_dob_d', isset($kairosmemberinfo['kairosmemberinfo_dob_d']) ? $kairosmemberinfo['kairosmemberinfo_dob_d'] : ''); ?>"  />
+	
+        <input id="kairosmemberinfo_dob_d" type="text" name="kairosmemberinfo_dob_d" maxlength="2" style="width:2%" value="<?php echo set_value('kairosmemberinfo_dob_d', isset($kairosmemberinfo['kairosmemberinfo_dob_d']) ? $kairosmemberinfo['kairosmemberinfo_dob_d'] : ''); ?>"  />
 		<span>/</span>
-		<input id="kairosmemberinfo_dob_m" type="text" name="kairosmemberinfo_dob_m" maxlength="2" value="<?php echo set_value('kairosmemberinfo_dob_m', isset($kairosmemberinfo['kairosmemberinfo_dob_m']) ? $kairosmemberinfo['kairosmemberinfo_dob_m'] : ''); ?>"  />
+		<input id="kairosmemberinfo_dob_m" type="text" name="kairosmemberinfo_dob_m" maxlength="2" style="width:2%" value="<?php echo set_value('kairosmemberinfo_dob_m', isset($kairosmemberinfo['kairosmemberinfo_dob_m']) ? $kairosmemberinfo['kairosmemberinfo_dob_m'] : ''); ?>"  />
 		<span>/</span>
-        <input id="kairosmemberinfo_dob_y" type="text" name="kairosmemberinfo_dob_y" maxlength="4" value="<?php echo set_value('kairosmemberinfo_dob_y', isset($kairosmemberinfo['kairosmemberinfo_dob_y']) ? $kairosmemberinfo['kairosmemberinfo_dob_y'] : ''); ?>"  />
+        <input id="kairosmemberinfo_dob_y" type="text" name="kairosmemberinfo_dob_y" maxlength="4" style="width:4%" value="<?php echo set_value('kairosmemberinfo_dob_y', isset($kairosmemberinfo['kairosmemberinfo_dob_y']) ? $kairosmemberinfo['kairosmemberinfo_dob_y'] : ''); ?>"  />
         <span class="help-inline"><?php echo form_error('kairosmemberinfo_dob'); ?></span>
         </div>
         </div>
@@ -83,9 +84,9 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
             <?php echo form_label('Gender'. lang('bf_form_label_required'), 'kairosmemberinfo_gender', array('class' => "control-label") ); ?>
        <div class='controls'>
         <label class="radio">
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_genderM', 'M', TRUE); ?> />
+            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_gender', 'M', TRUE); ?> />
             <label for="kairosmemberinfo_gender">M</label>
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_genderF', 'F'); ?> />
+            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_gender', 'F'); ?> />
             <label for="kairosmemberinfo_gender">F</label>
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_gender'); ?></span>
             </label>
@@ -137,43 +138,95 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		<script language="JavaScript" type="text/Javascript">
 			function showDetail()
 			{
-				if (document.getElementById('kairosmemberinfo_ownVentureT').checked)
-				{
 					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
-					document.getElementById('kairosmemberinfo_ownVentureF').checked = false;
-				}
 			}
 			function hideDetail()
 			{
-				if (document.getElementById('kairosmemberinfo_ownVentureF').checked)
-				{
 					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
-					document.getElementById('kairosmemberinfo_ownVentureT').checked = false;
-				}
-				
 			}
 		</script>
 
 		<div class="control-group <?php echo form_error('kairosmemberinfo_ownVenture') ? 'error' : ''; ?>">
-            <?php echo form_label('Do you have your own venture'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
+            <?php echo form_label('Do you have your own venture?'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
        <div class='controls'>
         <label class="radio">
-            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVentureT', 'T'); ?> />
+            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T',  TRUE); ?> />
             <label for="kairosmemberinfo_ownVenture">T</label>
-            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVentureF', 'F', TRUE); ?> />
+            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F') ; ?> />
             <label for="kairosmemberinfo_ownVenture">F</label>
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_ownVenture'); ?></span>
             </label>
         </div>
 		</div>
-		
 		<div id="kairosmemberinfo_ventureFollowUp" style="display:none">
-			<p>
-				<span>Some input here</span>
-			</p>
-			<span class="help-inline"><?php /*echo form_error('kairosmemberinfo_ownVenture');*/ ?></span>
+
+		<!-- Industry ID -->
+
+		<?php // Change the values in this array to populate your dropdown as required ?>
+
+		<?php
+				foreach ($industry_code as $row => $record)
+				{
+					//echo $row . '=>' . $record->uid . ' + ' . $record->name ;
+					$options_iid[$record->iid] = $record->name;
+				}
+		?>
+
+		<?php echo form_dropdown('kairosmemberinfo_IndustryID', $options_iid, set_value('kairosmemberinfo_IndustryID', isset($kairosmemberinfo['kairosmemberinfo_IndustryID']) ? $kairosmemberinfo['kairosmemberinfo_IndustryID'] : ''), 'Industry'. lang('bf_form_label_required'))?>
+		
+		<!-- Name of Venture -->
+
+        <div class="control-group <?php echo form_error('kairosmemberinfo_ventureName') ? 'error' : ''; ?>">
+            <?php echo form_label('Name of Venture'. lang('bf_form_label_required'), 'kairosmemberinfo_ventureName', array('class' => "control-label") ); ?>
+            <div class='controls'>
+        <input id="kairosmemberinfo_ventureName" type="text" name="kairosmemberinfo_ventureName" maxlength="100" value="<?php echo set_value('kairosmemberinfo_ventureName', isset($kairosmemberinfo['kairosmemberinfo_ventureName']) ? $kairosmemberinfo['kairosmemberinfo_ventureName'] : ''); ?>"  />
+        <span class="help-inline"><?php echo form_error('kairosmemberinfo_ventureName'); ?></span>
+        </div>
 		</div>
 		
+		<!-- Description of Venture -->
+		
+		<?php
+			$descrVenture = array(
+				'name' => 'kairosmemberinfo_ventureDescr',
+				'id' => 'kairosmemberinfo_ventureDescr',
+				'rows' => '10',
+				'cols' => '40',
+				'value' => isset($kairosmemberinfo['kairosmemberinfo_ventureDescr']) ? $kairosemberinfo['kairosmemberinfo_ventureDescr'] : ''
+			);
+		?>
+		<div class="control-group <?php echo form_error('kairosmemberinfo_ventureDescr') ? 'error' : ''; ?>">
+            <?php echo form_label('Description of Venture'. lang('bf_form_label_required'), 'kairosmemberinfo_ventureDescr', array('class' => "control-label") ); ?>
+            <div class='controls'>
+			<?php echo form_textarea($descrVenture)?>
+			<span class="help-inline"><?php /*echo form_error('kairosmemberinfo_ownVenture');*/ ?></span>
+		</div>
+		</div>
+		
+		<script language="JavaScript" type="text/Javascript">
+		function formShow(){
+			if (!(document.getElementById('kairosmemberinfo_ownVentureF').checked || document.getElementById('kairosmemberinfo_ownVentureT').checked))
+			{
+				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
+				return 1;
+			}
+			else if (document.getElementById('kairosmemberinfo_ownVentureF').checked)
+			{
+				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
+				return 2;
+			}
+			else if (document.getElementById('kairosmemberinfo_ownVentureT').checked)
+			{
+				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
+				return 3;
+			}
+			else return 4;
+			}
+		formShow();
+		</script>
+		
+		
+		</div>
 		<!-- Newsletter  -->
 		
 		

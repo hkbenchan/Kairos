@@ -113,6 +113,11 @@ class content extends Admin_Controller {
 		$query = $this->db->get('bf_university');
 		Template::set('university_code', $query->result());
 		
+		/* get the list of Industry */
+		$this->db->order_by('name');
+		$query = $this->db->get('bf_industry');
+		Template::set('industry_code', $query->result());
+		
 		Template::render(); 
 	}
 
@@ -222,13 +227,21 @@ class content extends Admin_Controller {
 		$this->form_validation->set_rules('kairosmemberinfo_firstname','First name','required|trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_middlename','Middle Name','trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_lastname','Last name','required|trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_dob','Date Of Birth','required|trim|xss_clean|max_length[8]');
-		$this->form_validation->set_rules('kairosmemberinfo_nationality_id','Nationality','required|trim|xss_clean|max_length[10]');
+		$this->form_validation->set_rules('kairosmemberinfo_dob_d','Date Of Birth','required|trim|numeric|xss_clean|max_length[2]');
+		$this->form_validation->set_rules('kairosmemberinfo_dob_m','Date Of Birth','required|trim|numeric|xss_clean|max_length[2]');
+		$this->form_validation->set_rules('kairosmemberinfo_dob_y','Date Of Birth','required|trim|numeric|xss_clean|max_length[4]');
 		$this->form_validation->set_rules('kairosmemberinfo_gender','Gender','required|max_length[1]');
 		$this->form_validation->set_rules('kairosmemberinfo_University','University','required|trim|xss_clean|max_length[255]');
-		$this->form_validation->set_rules('kairosmemberinfo_yearOfStudy','Year of Study','required|trim|xss_clean|max_length[6]');
 		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]');
-		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','required|trim|xss_clean|max_length[1]');
+		$this->form_validation->set_rules('kairosmemberinfo_ownVenture','Own Venture','required|max_length[1]');
+		
+		if ($this->input->post('kairosmemberinfo_ownVenture')=='T')
+		{
+			$this->form_validation->set_rules('kairosmemberinfo_ventureName','Name of Venture','required|trim|xss_clean|max_length[100]|min_length[1]');
+			$this->form_validation->set_rules('kairosmemberinfo_ventureDescr','Description of Venture','required|trim|xss_clean|max_length[500]|min_length[2]');
+		}
+		
+		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','trim|xss_clean|max_length[1]');
 
 		if ($this->form_validation->run() === FALSE)
 		{
