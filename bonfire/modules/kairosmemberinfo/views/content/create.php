@@ -16,13 +16,17 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
     <h3>KairosMemberInfo</h3>
 <?php echo form_open($this->uri->uri_string(), 'class="form-horizontal"'); ?>
     <fieldset>
-        <div class="control-group <?php echo form_error('kairosmemberinfo_surname') ? 'error' : ''; ?>">
-            <?php echo form_label('Surname'. lang('bf_form_label_required'), 'kairosmemberinfo_surname', array('class' => "control-label") ); ?>
+	
+		<!-- First name  -->
+	
+        <div class="control-group <?php echo form_error('kairosmemberinfo_firstname') ? 'error' : ''; ?>">
+            <?php echo form_label('First Name'. lang('bf_form_label_required'), 'kairosmemberinfo_firstname', array('class' => "control-label") ); ?>
             <div class='controls'>
-        <input id="kairosmemberinfo_surname" type="text" name="kairosmemberinfo_surname" maxlength="32" value="<?php echo set_value('kairosmemberinfo_surname', isset($kairosmemberinfo['kairosmemberinfo_surname']) ? $kairosmemberinfo['kairosmemberinfo_surname'] : ''); ?>"  />
-        <span class="help-inline"><?php echo form_error('kairosmemberinfo_surname'); ?></span>
+        <input id="kairosmemberinfo_firstname" type="text" name="kairosmemberinfo_firstname" maxlength="32" value="<?php echo set_value('kairosmemberinfo_firstname', isset($kairosmemberinfo['kairosmemberinfo_firstname']) ? $kairosmemberinfo['kairosmemberinfo_firstname'] : ''); ?>"  />
+        <span class="help-inline"><?php echo form_error('kairosmemberinfo_firstname'); ?></span>
         </div>
 
+		<!-- Middle Name  -->
 
         </div>
         <div class="control-group <?php echo form_error('kairosmemberinfo_middlename') ? 'error' : ''; ?>">
@@ -32,6 +36,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
         <span class="help-inline"><?php echo form_error('kairosmemberinfo_middlename'); ?></span>
         </div>
 
+		<!-- Last Name  -->
 
         </div>
         <div class="control-group <?php echo form_error('kairosmemberinfo_lastname') ? 'error' : ''; ?>">
@@ -41,73 +46,137 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
         <span class="help-inline"><?php echo form_error('kairosmemberinfo_lastname'); ?></span>
         </div>
 
+		<!-- Date of Birth  -->
 
         </div>
         <div class="control-group <?php echo form_error('kairosmemberinfo_dob') ? 'error' : ''; ?>">
-            <?php echo form_label('Date Of Birth'. lang('bf_form_label_required'), 'kairosmemberinfo_dob', array('class' => "control-label") ); ?>
-            <div class='controls'>
-        <input id="kairosmemberinfo_dob" type="text" name="kairosmemberinfo_dob" maxlength="8" value="<?php echo set_value('kairosmemberinfo_dob', isset($kairosmemberinfo['kairosmemberinfo_dob']) ? $kairosmemberinfo['kairosmemberinfo_dob'] : ''); ?>"  />
+            <?php echo form_label('Date Of Birth (DD/MM/YYYY)'. lang('bf_form_label_required'), 'kairosmemberinfo_dob', array('class' => "control-label") ); ?>
+        <div class='controls'>
+        <input id="kairosmemberinfo_dob_d" type="text" name="kairosmemberinfo_dob_d" maxlength="2" value="<?php echo set_value('kairosmemberinfo_dob_d', isset($kairosmemberinfo['kairosmemberinfo_dob_d']) ? $kairosmemberinfo['kairosmemberinfo_dob_d'] : ''); ?>"  />
+		<span>/</span>
+		<input id="kairosmemberinfo_dob_m" type="text" name="kairosmemberinfo_dob_m" maxlength="2" value="<?php echo set_value('kairosmemberinfo_dob_m', isset($kairosmemberinfo['kairosmemberinfo_dob_m']) ? $kairosmemberinfo['kairosmemberinfo_dob_m'] : ''); ?>"  />
+		<span>/</span>
+        <input id="kairosmemberinfo_dob_y" type="text" name="kairosmemberinfo_dob_y" maxlength="4" value="<?php echo set_value('kairosmemberinfo_dob_y', isset($kairosmemberinfo['kairosmemberinfo_dob_y']) ? $kairosmemberinfo['kairosmemberinfo_dob_y'] : ''); ?>"  />
         <span class="help-inline"><?php echo form_error('kairosmemberinfo_dob'); ?></span>
         </div>
-
-
         </div>
 
+
+		<!-- Nationality  -->
 
         <?php // Change the values in this array to populate your dropdown as required ?>
 
-<?php $options = array(
-                10 => 10,
-); ?>
+<?php 
+		foreach ($country_code as $row => $record)
+		{
+			//echo $row . '=>' . $record->nid . ' + ' . $record->name ;
+			$options_nid[$record->nid] = $record->name;
+		}
+?>
 
-        <?php echo form_dropdown('kairosmemberinfo_nationality_id', $options, set_value('kairosmemberinfo_nationality_id', isset($kairosmemberinfo['kairosmemberinfo_nationality_id']) ? $kairosmemberinfo['kairosmemberinfo_nationality_id'] : ''), 'Nationality'. lang('bf_form_label_required'))?>        <div class="control-group <?php echo form_error('kairosmemberinfo_gender') ? 'error' : ''; ?>">
+        <?php echo form_dropdown('kairosmemberinfo_nationalityID', $options_nid, set_value('kairosmemberinfo_nationalityID', isset($kairosmemberinfo['kairosmemberinfo_nationalityID']) ? $kairosmemberinfo['kairosmemberinfo_nationalityID'] : ''), 'Nationality'. lang('bf_form_label_required'))?>        
+
+		
+		<!-- Gender  -->
+		
+		<div class="control-group <?php echo form_error('kairosmemberinfo_gender') ? 'error' : ''; ?>">
             <?php echo form_label('Gender'. lang('bf_form_label_required'), 'kairosmemberinfo_gender', array('class' => "control-label") ); ?>
-            <div class='controls'>
+       <div class='controls'>
         <label class="radio">
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="option1" <?php echo set_radio('kairosmemberinfo_gender', 'option1', TRUE); ?> />
-            <label for="kairosmemberinfo_gender">Radio option 1</label>
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="option2" <?php echo set_radio('kairosmemberinfo_gender', 'option2'); ?> />
-            <label for="kairosmemberinfo_gender">Radio option 2</label>
+            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_genderM', 'M', TRUE); ?> />
+            <label for="kairosmemberinfo_gender">M</label>
+            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_genderF', 'F'); ?> />
+            <label for="kairosmemberinfo_gender">F</label>
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_gender'); ?></span>
             </label>
         </div>
+		</div>
+		
+		<!-- University  -->
+		
+		<?php // Change the values in this array to populate your dropdown as required ?>
 
+		<?php 
+				foreach ($university_code as $row => $record)
+				{
+					//echo $row . '=>' . $record->uid . ' + ' . $record->name ;
+					$options_uid[$record->uid] = $record->name;
+				}
+		?>
 
+		        <?php echo form_dropdown('kairosmemberinfo_UniversityID', $options_uid, set_value('kairosmemberinfo_UniversityID', isset($kairosmemberinfo['kairosmemberinfo_UniversityID']) ? $kairosmemberinfo['kairosmemberinfo_UniversityID'] : ''), 'University/Institution'. lang('bf_form_label_required'))?>
+		
+		
+		<!-- Year Of Study  -->
 
-        </div>
-        <div class="control-group <?php echo form_error('kairosmemberinfo_University') ? 'error' : ''; ?>">
-            <?php echo form_label('University'. lang('bf_form_label_required'), 'kairosmemberinfo_University', array('class' => "control-label") ); ?>
-            <div class='controls'>
-        <input id="kairosmemberinfo_University" type="text" name="kairosmemberinfo_University" maxlength="255" value="<?php echo set_value('kairosmemberinfo_University', isset($kairosmemberinfo['kairosmemberinfo_University']) ? $kairosmemberinfo['kairosmemberinfo_University'] : ''); ?>"  />
-        <span class="help-inline"><?php echo form_error('kairosmemberinfo_University'); ?></span>
-        </div>
+		<?php // Change the values in this array to populate your dropdown as required ?>
 
+		<?php $options_yos = array(
+		                '0' => '0',
+						'1' => '1',
+						'2' => '2',
+						'3' => '3',
+						'4' => '4',
+						'Others' => 'Others'
+		); ?>
 
-        </div>
-        <div class="control-group <?php echo form_error('kairosmemberinfo_yearOfStudy') ? 'error' : ''; ?>">
-            <?php echo form_label('Year of Study'. lang('bf_form_label_required'), 'kairosmemberinfo_yearOfStudy', array('class' => "control-label") ); ?>
-            <div class='controls'>
-        <label class="radio">
-            <input id="kairosmemberinfo_yearOfStudy" name="kairosmemberinfo_yearOfStudy" type="radio" class="" value="option1" <?php echo set_radio('kairosmemberinfo_yearOfStudy', 'option1', TRUE); ?> />
-            <label for="kairosmemberinfo_yearOfStudy">Radio option 1</label>
-            <input id="kairosmemberinfo_yearOfStudy" name="kairosmemberinfo_yearOfStudy" type="radio" class="" value="option2" <?php echo set_radio('kairosmemberinfo_yearOfStudy', 'option2'); ?> />
-            <label for="kairosmemberinfo_yearOfStudy">Radio option 2</label>
-            <span class="help-inline"><?php echo form_error('kairosmemberinfo_yearOfStudy'); ?></span>
-            </label>
-        </div>
+		        <?php echo form_dropdown('kairosmemberinfo_yearOfStudy', $options_yos, set_value('kairosmemberinfo_yearOfStudy', isset($kairosmemberinfo['kairosmemberinfo_yearOfStudy']) ? $kairosmemberinfo['kairosmemberinfo_yearOfStudy'] : ''), 'Year of Study'. lang('bf_form_label_required'))?>
 
-
-
-        </div>
+		<!-- Phone number  -->
+		
         <div class="control-group <?php echo form_error('kairosmemberinfo_phoneNo') ? 'error' : ''; ?>">
             <?php echo form_label('Contact Number'. lang('bf_form_label_required'), 'kairosmemberinfo_phoneNo', array('class' => "control-label") ); ?>
             <div class='controls'>
         <input id="kairosmemberinfo_phoneNo" type="text" name="kairosmemberinfo_phoneNo" maxlength="14" value="<?php echo set_value('kairosmemberinfo_phoneNo', isset($kairosmemberinfo['kairosmemberinfo_phoneNo']) ? $kairosmemberinfo['kairosmemberinfo_phoneNo'] : ''); ?>"  />
         <span class="help-inline"><?php echo form_error('kairosmemberinfo_phoneNo'); ?></span>
         </div>
+		</div>
+		
+		<!-- Own venture  -->
 
+		<script language="JavaScript" type="text/Javascript">
+			function showDetail()
+			{
+				if (document.getElementById('kairosmemberinfo_ownVentureT').checked)
+				{
+					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
+					document.getElementById('kairosmemberinfo_ownVentureF').checked = false;
+				}
+			}
+			function hideDetail()
+			{
+				if (document.getElementById('kairosmemberinfo_ownVentureF').checked)
+				{
+					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
+					document.getElementById('kairosmemberinfo_ownVentureT').checked = false;
+				}
+				
+			}
+		</script>
 
+		<div class="control-group <?php echo form_error('kairosmemberinfo_ownVenture') ? 'error' : ''; ?>">
+            <?php echo form_label('Do you have your own venture'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
+       <div class='controls'>
+        <label class="radio">
+            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVentureT', 'T'); ?> />
+            <label for="kairosmemberinfo_ownVenture">T</label>
+            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVentureF', 'F', TRUE); ?> />
+            <label for="kairosmemberinfo_ownVenture">F</label>
+            <span class="help-inline"><?php echo form_error('kairosmemberinfo_ownVenture'); ?></span>
+            </label>
         </div>
+		</div>
+		
+		<div id="kairosmemberinfo_ventureFollowUp" style="display:none">
+			<p>
+				<span>Some input here</span>
+			</p>
+			<span class="help-inline"><?php /*echo form_error('kairosmemberinfo_ownVenture');*/ ?></span>
+		</div>
+		
+		<!-- Newsletter  -->
+		
+		
         <div class="control-group <?php echo form_error('kairosmemberinfo_newsletterUpdate') ? 'error' : ''; ?>">
             <?php echo form_label('Receive Future Updates and Newsletter'. lang('bf_form_label_required'), 'kairosmemberinfo_newsletterUpdate', array('class' => "control-label") ); ?>
             <div class='controls'>
@@ -117,7 +186,6 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
             </label>
 
         </div>
-
         </div>
 
 

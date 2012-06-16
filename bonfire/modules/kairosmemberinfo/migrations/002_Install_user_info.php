@@ -20,7 +20,7 @@ class Migration_Install_user_info extends Migration {
 				'constraint' => 20,
 				'unsigned' => TRUE
 			),
-			'kairosmemberinfo_surname' => array(
+			'kairosmemberinfo_firstname' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 32,
 				

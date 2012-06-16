@@ -96,11 +96,24 @@ class content extends Admin_Controller {
 			{
 				Template::set_message(lang('kairosmemberinfo_create_failure') . $this->kairosmemberinfo_model->error, 'error');
 			}
-		}
+		}	
+		
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
 
 		Template::set('toolbar_title', lang('kairosmemberinfo_create') . ' KairosMemberInfo');
-		Template::render();
+		
+		/* get the list of Country */
+		$this->db->order_by('name');
+		$query = $this->db->get('bf_country');
+		Template::set('country_code',$query->result());
+		
+		
+		/* get the list of University */
+		$this->db->order_by('name');
+		$query = $this->db->get('bf_university');
+		Template::set('university_code', $query->result());
+		
+		Template::render(); 
 	}
 
 	//--------------------------------------------------------------------
@@ -206,7 +219,7 @@ class content extends Admin_Controller {
 		}
 
 		
-		$this->form_validation->set_rules('kairosmemberinfo_surname','Surname','required|trim|xss_clean|alpha_numeric|max_length[32]');
+		$this->form_validation->set_rules('kairosmemberinfo_firstname','First name','required|trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_middlename','Middle Name','trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_lastname','Last name','required|trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_dob','Date Of Birth','required|trim|xss_clean|max_length[8]');
@@ -225,7 +238,7 @@ class content extends Admin_Controller {
 		// make sure we only pass in the fields we want
 		
 		$data = array();
-		$data['kairosmemberinfo_surname']        = $this->input->post('kairosmemberinfo_surname');
+		$data['kairosmemberinfo_firstname']        = $this->input->post('kairosmemberinfo_firstname');
 		$data['kairosmemberinfo_middlename']        = $this->input->post('kairosmemberinfo_middlename');
 		$data['kairosmemberinfo_lastname']        = $this->input->post('kairosmemberinfo_lastname');
 		$data['kairosmemberinfo_dob']        = $this->input->post('kairosmemberinfo_dob') ? $this->input->post('kairosmemberinfo_dob') : '0000-00-00';
