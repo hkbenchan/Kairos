@@ -61,7 +61,7 @@ class content extends Admin_Controller {
 			}
 		}
 		
-		$records = $this->kairosmemberinfo_model->find_all();
+		$records = $this->kairosmemberinfo_model->select($this->auth->user_id());
 				
 		Template::set('records', $records);
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
@@ -231,14 +231,18 @@ class content extends Admin_Controller {
 		$this->form_validation->set_rules('kairosmemberinfo_dob_m','Date Of Birth','required|trim|numeric|xss_clean|max_length[2]');
 		$this->form_validation->set_rules('kairosmemberinfo_dob_y','Date Of Birth','required|trim|numeric|xss_clean|max_length[4]');
 		$this->form_validation->set_rules('kairosmemberinfo_gender','Gender','required|max_length[1]');
-		$this->form_validation->set_rules('kairosmemberinfo_University','University','required|trim|xss_clean|max_length[255]');
-		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]');
+		$this->form_validation->set_rules('kairosmemberinfo_UniversityID','University/Institution','required|trim|xss_clean|max_length[255]');
+		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]|numeric');
 		$this->form_validation->set_rules('kairosmemberinfo_ownVenture','Own Venture','required|max_length[1]');
+		$this->form_validation->set_rules('kairosmemberinfo_skills','Special Skills','xss_clean|max_length[100]');
+		
+		Template::set('kairosmemberinfo_skills', $this->input->post('kairosmemberinfo_skills'));
 		
 		if ($this->input->post('kairosmemberinfo_ownVenture')=='T')
 		{
 			$this->form_validation->set_rules('kairosmemberinfo_ventureName','Name of Venture','required|trim|xss_clean|max_length[100]|min_length[1]');
 			$this->form_validation->set_rules('kairosmemberinfo_ventureDescr','Description of Venture','required|trim|xss_clean|max_length[500]|min_length[2]');
+			Template::set('kairosmemberinfo_ventureDescr', $this->input->post('kairosmemberinfo_ventureDescr'));
 		}
 		
 		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','trim|xss_clean|max_length[1]');
@@ -247,21 +251,39 @@ class content extends Admin_Controller {
 		{
 			return FALSE;
 		}
+		
+		if (!(checkdate($this->input->post('kairosmemberinfo_dob_m'),$this->input->post('kairosmemberinfo_dob_d'),$this->input->post('kairosmemberinfo_dob_y'))))
+		{
+			return FALSE;
+		}
 
 		// make sure we only pass in the fields we want
 		
 		$data = array();
-		$data['kairosmemberinfo_firstname']        = $this->input->post('kairosmemberinfo_firstname');
-		$data['kairosmemberinfo_middlename']        = $this->input->post('kairosmemberinfo_middlename');
-		$data['kairosmemberinfo_lastname']        = $this->input->post('kairosmemberinfo_lastname');
-		$data['kairosmemberinfo_dob']        = $this->input->post('kairosmemberinfo_dob') ? $this->input->post('kairosmemberinfo_dob') : '0000-00-00';
-		$data['kairosmemberinfo_nationality_id']        = $this->input->post('kairosmemberinfo_nationality_id');
-		$data['kairosmemberinfo_gender']        = $this->input->post('kairosmemberinfo_gender');
-		$data['kairosmemberinfo_University']        = $this->input->post('kairosmemberinfo_University');
-		$data['kairosmemberinfo_yearOfStudy']        = $this->input->post('kairosmemberinfo_yearOfStudy');
-		$data['kairosmemberinfo_phoneNo']        = $this->input->post('kairosmemberinfo_phoneNo');
-		$data['kairosmemberinfo_newsletterUpdate']        = $this->input->post('kairosmemberinfo_newsletterUpdate');
-
+		$data['kairosmemberinfo_firstname'] = $this->input->post('kairosmemberinfo_firstname');
+		$data['kairosmemberinfo_middlename'] = $this->input->post('kairosmemberinfo_middlename');
+		$data['kairosmemberinfo_lastname'] = $this->input->post('kairosmemberinfo_lastname');
+		
+		$data['kairosmemberinfo_dob'] = $this->input->post('kairosmemberinfo_dob_y') . '-' . $this->input->post('kairosmemberinfo_dob_m') . '-' . $this->input->post('kairosmemberinfo_dob_d');
+		
+		$data['kairosmemberinfo_nationalityID'] = $this->input->post('kairosmemberinfo_nationalityID');
+		$data['kairosmemberinfo_gender'] = $this->input->post('kairosmemberinfo_gender');
+		$data['kairosmemberinfo_UniversityID'] = $this->input->post('kairosmemberinfo_UniversityID');
+		$data['kairosmemberinfo_yearOfStudy'] = $this->input->post('kairosmemberinfo_yearOfStudy');
+		$data['kairosmemberinfo_phoneNo'] = $this->input->post('kairosmemberinfo_phoneNo');
+		$data['kairosmemberinfo_newsletterUpdate'] = $this->input->post('kairosmemberinfo_newsletterUpdate');
+		$data['kairosmemberinfo_ownVenture'] = $this->input->post('kairosmemberinfo_ownVenture');
+		$data['kairosmemberinfo_skills'] = $this->input->post('kairosmemberinfo_skills');
+		
+		if ($data['kairosmemberinfo_ownVenture'] == 'T')
+		{
+			$data['kairosmemberinfo_ventureName'] = $this->input->post('kairosmemberinfo_ventureName');
+			$data['kairosmemberinfo_industryID'] = $this->input->post('kairosmemberinfo_industryID');
+			$data['kairosmemberinfo_ventureDescr'] = $this->input->post('kairosmemberinfo_ventureDescr');
+		}
+		
+		
+		
 		if ($type == 'insert')
 		{
 			$id = $this->kairosmemberinfo_model->insert($data);

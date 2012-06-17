@@ -192,14 +192,14 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 				'id' => 'kairosmemberinfo_ventureDescr',
 				'rows' => '10',
 				'cols' => '40',
-				'value' => isset($kairosmemberinfo['kairosmemberinfo_ventureDescr']) ? $kairosemberinfo['kairosmemberinfo_ventureDescr'] : ''
+				'value' => isset($kairosmemberinfo_ventureDescr) ? $kairosmemberinfo_ventureDescr : ''
 			);
 		?>
 		<div class="control-group <?php echo form_error('kairosmemberinfo_ventureDescr') ? 'error' : ''; ?>">
             <?php echo form_label('Description of Venture'. lang('bf_form_label_required'), 'kairosmemberinfo_ventureDescr', array('class' => "control-label") ); ?>
             <div class='controls'>
 			<?php echo form_textarea($descrVenture)?>
-			<span class="help-inline"><?php /*echo form_error('kairosmemberinfo_ownVenture');*/ ?></span>
+			<span class="help-inline"><?php echo form_error('kairosmemberinfo_ventureDescr'); ?></span>
 		</div>
 		</div>
 		
@@ -227,6 +227,28 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		
 		
 		</div>
+		
+		
+		<!-- Special Skills -->
+		
+		<?php
+			$skills = array(
+				'name' => 'kairosmemberinfo_skills',
+				'id' => 'kairosmemberinfo_skills',
+				'rows' => '10',
+				'cols' => '40',
+				'value' => isset($kairosmemberinfo_skills) ? $kairosmemberinfo_skills : ''
+			);
+		?>
+		
+		<div class="control-group <?php echo form_error('kairosmemberinfo_skills') ? 'error' : ''; ?>">
+            <?php echo form_label('Special Skills', 'kairosmemberinfo_skills', array('class' => "control-label") ); ?>
+            <div class='controls'>
+			<?php echo form_textarea($skills)?>
+			<span class="help-inline"><?php echo form_error('kairosmemberinfo_skills'); ?></span>
+		</div>
+		</div>
+		
 		<!-- Newsletter  -->
 		
 		

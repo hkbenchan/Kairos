@@ -72,7 +72,7 @@ class Migration_Install_user_info extends Migration {
 			
 			'kairosmemberinfo_skills' => array(
 				'type' => 'VARCHAR',
-				'constraint' => 50
+				'constraint' => 100
 			),
 			
 			'kairosmemberinfo_newsletterUpdate' => array(
