@@ -61,8 +61,10 @@ class content extends Admin_Controller {
 			}
 		}
 		
-		$records = $this->kairosmemberinfo_model->select($this->auth->user_id());
-				
+		$records = $this->kairosmemberinfo_model->find($this->auth->user_id());
+		
+		//print_r($records); die();
+
 		Template::set('records', $records);
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
@@ -87,7 +89,7 @@ class content extends Admin_Controller {
 			if ($insert_id = $this->save_kairosmemberinfo())
 			{
 				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_record').': ' . $insert_id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
+				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_record'). ': ' . $insert_id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
 
 				Template::set_message(lang('kairosmemberinfo_create_success'), 'success');
 				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
@@ -102,6 +104,13 @@ class content extends Admin_Controller {
 
 		Template::set('toolbar_title', lang('kairosmemberinfo_create') . ' KairosMemberInfo');
 		
+		$this->getAndPassOptions();
+		
+		Template::render(); 
+	}
+
+	private function getAndPassOptions()
+	{
 		/* get the list of Country */
 		$this->db->order_by('name');
 		$query = $this->db->get('bf_country');
@@ -117,9 +126,8 @@ class content extends Admin_Controller {
 		$this->db->order_by('name');
 		$query = $this->db->get('bf_industry');
 		Template::set('industry_code', $query->result());
-		
-		Template::render(); 
 	}
+
 
 	//--------------------------------------------------------------------
 
@@ -150,17 +158,32 @@ class content extends Admin_Controller {
 				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
 
 				Template::set_message(lang('kairosmemberinfo_edit_success'), 'success');
+				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
 			}
 			else
 			{
 				Template::set_message(lang('kairosmemberinfo_edit_failure') . $this->kairosmemberinfo_model->error, 'error');
 			}
 		}
-
-		Template::set('kairosmemberinfo', $this->kairosmemberinfo_model->find($id));
+		$uid = $this->auth->user_id();
+		$result = $this->kairosmemberinfo_model->find($uid);
+		
+		// break down the dob
+		$dob = explode('-',$result['kairosmemberinfo_dob']);
+		
+		$result['kairosmemberinfo_dob_y'] = $dob[0];
+		$result['kairosmemberinfo_dob_m'] = $dob[1];
+		$result['kairosmemberinfo_dob_d'] = $dob[2];
+		
+		
+		//print_r($result); die();
+		Template::set('kairosmemberinfo', $result);
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
 
 		Template::set('toolbar_title', lang('kairosmemberinfo_edit') . ' KairosMemberInfo');
+
+		$this->getAndPassOptions();
+
 		Template::render();
 	}
 
@@ -181,16 +204,22 @@ class content extends Admin_Controller {
 
 		if (!empty($id))
 		{
-
-			if ($this->kairosmemberinfo_model->delete($id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_delete_success'), 'success');
-			} else
-			{
-				Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
+			// check if the entry's owner is current user
+			if ($this->kairosmemberinfo_model->authroizeDelete($id,$this->auth->user_id())) {
+				if ($this->kairosmemberinfo_model->delete($id))
+				{
+					// Log the activity
+					$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
+				
+					Template::set_message(lang('kairosmemberinfo_delete_success'), 'success');
+					Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
+				} else
+				{
+					Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
+				}
+			}
+			else {
+				Template::set_message(lang('kairosmemberinfo_delete_not_auth'),'error');
 			}
 		}
 
@@ -271,18 +300,16 @@ class content extends Admin_Controller {
 		$data['kairosmemberinfo_UniversityID'] = $this->input->post('kairosmemberinfo_UniversityID');
 		$data['kairosmemberinfo_yearOfStudy'] = $this->input->post('kairosmemberinfo_yearOfStudy');
 		$data['kairosmemberinfo_phoneNo'] = $this->input->post('kairosmemberinfo_phoneNo');
-		$data['kairosmemberinfo_newsletterUpdate'] = $this->input->post('kairosmemberinfo_newsletterUpdate');
+		$data['kairosmemberinfo_newsletterUpdate'] = $this->input->post('kairosmemberinfo_newsletterUpdate')==0 ? 'F': 'T';
 		$data['kairosmemberinfo_ownVenture'] = $this->input->post('kairosmemberinfo_ownVenture');
 		$data['kairosmemberinfo_skills'] = $this->input->post('kairosmemberinfo_skills');
 		
 		if ($data['kairosmemberinfo_ownVenture'] == 'T')
 		{
 			$data['kairosmemberinfo_ventureName'] = $this->input->post('kairosmemberinfo_ventureName');
-			$data['kairosmemberinfo_industryID'] = $this->input->post('kairosmemberinfo_industryID');
+			$data['kairosmemberinfo_IndustryID'] = $this->input->post('kairosmemberinfo_IndustryID');
 			$data['kairosmemberinfo_ventureDescr'] = $this->input->post('kairosmemberinfo_ventureDescr');
 		}
-		
-		
 		
 		if ($type == 'insert')
 		{
