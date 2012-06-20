@@ -146,13 +146,18 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 					}
 				</script>
 
+				<?php
+					$ownVentureT = ($kairosmemberinfo['kairosmemberinfo_ownVenture'] == 'T')? TRUE: FALSE;
+					$ownVentureF = (!$ownVentureT);
+				?>
+
 				<div class="control-group <?php echo form_error('kairosmemberinfo_ownVenture') ? 'error' : ''; ?>">
 		            <?php echo form_label('Do you have your own venture?'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
 		       <div class='controls'>
 		        <label class="radio">
-		            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T',  TRUE); ?> />
+		            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T', $ownVentureT ); ?> />
 		            <label for="kairosmemberinfo_ownVenture">T</label>
-		            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F') ; ?> />
+		            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F', $ownVentureF) ; ?> />
 		            <label for="kairosmemberinfo_ownVenture">F</label>
 		            <span class="help-inline"><?php echo form_error('kairosmemberinfo_ownVenture'); ?></span>
 		            </label>
@@ -237,7 +242,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 						'id' => 'kairosmemberinfo_skills',
 						'rows' => '10',
 						'cols' => '40',
-						'value' => isset($kairosmemberinfo_skills) ? $kairosmemberinfo_skills : ''
+						'value' => isset($kairosmemberinfo['kairosmemberinfo_skills']) ? $kairosmemberinfo['kairosmemberinfo_skills'] : ''
 					);
 				?>
 

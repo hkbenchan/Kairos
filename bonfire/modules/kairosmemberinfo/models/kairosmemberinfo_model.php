@@ -89,25 +89,39 @@ class Kairosmemberinfo_model extends BF_Model {
 			$industry = $this->select_industry($venture[0]->IndustryID);
 		
 		// combine results
-		
-		$result = $this->join_user_info_and_venture($user_info,$venture);
-		$result['kairosmemberinfo_University'] = $university[0]->name;
-		$result['kairosmemberinfo_nationality'] = $nation[0]->name;
-		$result['kairosmemberinfo_ventureIndustry'] = $industry[0]->name;
-//		print_r($result); die();
-		return $result;
+		if (count($user_info) && count($venture)) {
+			$result = $this->join_user_info_and_venture($user_info,$venture);
+			$result['kairosmemberinfo_University'] = $university[0]->name;
+			$result['kairosmemberinfo_nationality'] = $nation[0]->name;
+			$result['kairosmemberinfo_ventureIndustry'] = $industry[0]->name;
+//			print_r($result); die();
+			return $result;
+		}
+		elseif (count($user_info))
+		{
+			$result = $this->join_user_info_and_venture($user_info,$venture);
+			$result['kairosmemberinfo_University'] = $university[0]->name;
+			$result['kairosmemberinfo_nationality'] = $nation[0]->name;
+			$result['kairosmemberinfo_ventureIndustry'] = '';
+			return $result;
+		}
+		else
+		{
+			return $user_info;
+		}
 	}
 
 	public function delete($uid)
 	{
-		if (count(select_venture($uid))>0) {
+		$d_v = $this->select_venture($uid);
+		
+		if (count($d_v)>0) {
 			$this->db->where('uid',$uid);
 			$this->db->delete('bf_venture');
 		}
 		
 		$this->db->where('uid',$uid);
 		$this->db->delete('bf_user_info');
-		
 		return 1;
 	}
 	

@@ -38,11 +38,11 @@ class content extends Admin_Controller {
 				$checked = $this->input->post('checked');
 
 				if (is_array($checked) && count($checked))
-				{
+				{					
 					$result = FALSE;
 					foreach ($checked as $pid)
 					{
-						$result = $this->kairosmemberinfo_model->delete($pid);
+						$result = $this->kairosmemberinfo_model->delete($this->auth->user_id());
 					}
 
 					if ($result)
@@ -174,6 +174,8 @@ class content extends Admin_Controller {
 		$result['kairosmemberinfo_dob_y'] = $dob[0];
 		$result['kairosmemberinfo_dob_m'] = $dob[1];
 		$result['kairosmemberinfo_dob_d'] = $dob[2];
+		
+		Template::set('kairosmemberinfo_skills', $this->input->post('kairosmemberinfo_skills'));
 		
 		
 		//print_r($result); die();

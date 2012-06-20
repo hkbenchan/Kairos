@@ -1,2 +1,4 @@
 todo_progress.log
 log*.php
+.DS_Store
+*.log

@@ -68,6 +68,10 @@
 					</tr>
 				<?php endif; ?>
 				<tr>
+					<td>Special Skills</td>
+					<td><?php echo $records['kairosmemberinfo_skills']; ?></td>
+				</tr>
+				<tr>
 					<td>Receive future Newsletter (T/F)</td>
 					<td><?php echo $records['kairosmemberinfo_newsletterUpdate']==1 ? 'T':'F'; ?></td>
 				</tr>
