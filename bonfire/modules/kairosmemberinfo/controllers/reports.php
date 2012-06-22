@@ -29,7 +29,7 @@ class reports extends Admin_Controller {
 	*/
 	public function index()
 	{
-
+		/*
 		// Deleting anything?
 		if ($action = $this->input->post('delete'))
 		{
@@ -62,8 +62,12 @@ class reports extends Admin_Controller {
 		}
 
 		$records = $this->kairosmemberinfo_model->find_all();
-
+		
 		Template::set('records', $records);
+*/
+		$reportOptions = $this->kairosmemberinfo_model->getReportOptions();
+		Template::set('records', $reportOptions);
+//		print_r($reportOptions); die();
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 	}
@@ -80,7 +84,7 @@ class reports extends Admin_Controller {
 	public function create()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Create');
-
+		/*
 		if ($this->input->post('submit'))
 		{
 			if ($insert_id = $this->save_kairosmemberinfo())
@@ -100,6 +104,7 @@ class reports extends Admin_Controller {
 
 		Template::set('toolbar_title', lang('kairosmemberinfo_create') . ' KairosMemberInfo');
 		Template::render();
+		*/
 	}
 
 	//--------------------------------------------------------------------
@@ -114,7 +119,7 @@ class reports extends Admin_Controller {
 	public function edit()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Edit');
-
+		/*
 		$id = $this->uri->segment(5);
 
 		if (empty($id))
@@ -140,7 +145,7 @@ class reports extends Admin_Controller {
 
 		Template::set('kairosmemberinfo', $this->kairosmemberinfo_model->find($id));
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
-
+		*/
 		Template::set('toolbar_title', lang('kairosmemberinfo_edit') . ' KairosMemberInfo');
 		Template::render();
 	}
@@ -157,7 +162,7 @@ class reports extends Admin_Controller {
 	public function delete()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Delete');
-
+		/*
 		$id = $this->uri->segment(5);
 
 		if (!empty($id))
@@ -176,6 +181,7 @@ class reports extends Admin_Controller {
 		}
 
 		redirect(SITE_AREA .'/reports/kairosmemberinfo');
+		*/
 	}
 
 	//--------------------------------------------------------------------
@@ -197,7 +203,7 @@ class reports extends Admin_Controller {
 		Returns:
 			An INT id for successful inserts. If updating, returns TRUE on success.
 			Otherwise, returns FALSE.
-	*/
+	*/ /*
 	private function save_kairosmemberinfo($type='insert', $id=0)
 	{
 		if ($type == 'update') {
@@ -253,10 +259,126 @@ class reports extends Admin_Controller {
 		}
 
 		return $return;
-	}
+	}*/
 
 	//--------------------------------------------------------------------
 
 
+	/*
+		Method: View
+		Display the summary of selected report type
+	*/
+	public function view()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$reportID = $this->uri->segment(5);
+		
+		if (!empty($reportID))
+		{
+			// get the report type
+			//echo $reportID;
+			$result = $this->kairosmemberinfo_model->getReportTypeByID($reportID);
+			//print_r($result);
+			
+			// check if the ID is valid
+			if (count($result)>0)
+			{
+				if ($reportID == 2)
+				{
+					Template::redirect(SITE_AREA .'/reports/kairosmemberinfo/viewGroupByUniversity');
+				}
+			}
+			// get all the data required and prepare for pagination
+			
+			
+			// render the page
+			
+		}
+		else
+		{
+			
+		}
+	}
+	
+	public function viewGroupByUniversity()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		//echo "this is the group by university page";
+		$query = $this->kairosmemberinfo_model->groupByUniversity();
+		$this->load->library('pagination');
+		//$this->load->library('table');
+		
+		$config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
+		$config['total_rows'] = count($query);
+		$config['per_page'] = 20; 
+		$config['num_links'] = 5;
 
+		$this->pagination->initialize($config); 
+		
+		$query = $this->kairosmemberinfo_model->groupByUniversity($config['per_page'], $this->uri->segment(5));
+		//print_r($query); die();
+		Template::set('toolbar_title', 'View University');
+		Template::set_view('reports/query/groupByUniversity');
+		Template::set('records',$query);
+		Template::render();
+		//echo $this->pagination->create_links();
+	}
+	
+	public function viewUniversity()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		$uni_ID = $this->uri->segment(5);
+		
+		if (!empty($uni_ID))
+		{
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
+			$this->load->library('pagination');
+			
+			$config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
+			$config['total_rows'] = count($query);
+			$config['per_page'] = 20; 
+			$config['num_links'] = 5;
+			$config['uri_segment'] = 6;
+
+			$this->pagination->initialize($config);
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$config['per_page'], $this->uri->segment(6));
+			//print_r($query);die();
+			Template::set('records',$query);
+		}
+		Template::set('toolbar_title', 'View Members in this University');
+		Template::set_view('reports/query/viewUniversity');
+		Template::render();
+		
+	}
+	
+	
+	/**
+	*
+	*  {base_url}/index.php/admin/reports/KairosMemberInfo/detail/$user_id
+	*  param: $user_id
+	*/
+	
+	
+	public function detail()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$detailID = $this->uri->segment(5);
+		
+		if (!empty($detailID))
+		{
+			//get that user info
+			$result = $this->kairosmemberinfo_model->find($detailID);
+			if (count($result)>0)
+			{
+				Template::set('records', $result);
+			}
+		}
+		
+		Template::set('toolbar_title', 'Manage KairosMemberInfo');
+		Template::set_view('reports/detail.php');
+		Template::render();
+		
+	}
 }

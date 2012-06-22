@@ -10,6 +10,61 @@ class Kairosmemberinfo_model extends BF_Model {
 	protected $set_modified = false;
 
 
+	private $reportOptions = array (
+		'1' => array(
+			'reportID' => 1,
+			'reportName' => 'Select by UserID',
+			'reportDescription' => 'Show all detail of a member',
+			'display' => FALSE
+		),
+		
+		'2' => array(
+			'reportID' => 2,
+			'reportName' => 'Group by University',
+			'reportDescription' => 'Group by University and show the number of members in that university',
+			'display' => TRUE
+		),
+		
+		'3' => array(
+			'reportID' => 3,
+			'reportName' => 'Filter out by University',
+			'reportDescription' => 'Select members in that university',
+			'display' => FALSE
+		),
+		
+		'4' => array(
+			'reportID' => 4,
+			'reportName' => 'Select all venture owner',
+			'reportDescription' => 'Show all members who own venture',
+			'display' => TRUE
+		),
+		
+		'5' => array(
+			'reportID' => 5,
+			'reportName' => 'Group by Industry of Venture',
+			'reportDescription' => 'Group by Industry of Venture and show the number of venture in that industry',
+			'display' => TRUE
+		),
+		
+		'6' => array(
+			'reportID' => 6,
+			'reportName' => 'Filter out by Industry of Venture',
+			'reportDescription' => 'Select members in that Industry of Venture',
+			'display' => FALSE
+		)
+	);
+
+	public function getReportOptions()
+	{
+		return $this->reportOptions;
+	}
+
+	public function getReportTypeByID($reportID)
+	{
+		return $this->reportOptions[$reportID];
+	}
+
+
 	public function insert($data)
 	{
 		$uid = $this->auth->user_id();
@@ -140,6 +195,61 @@ class Kairosmemberinfo_model extends BF_Model {
 		}
 	}
 	
+	public function groupByUniversity($limit = 0, $offset = 0)
+	{
+		//$this->db->select('university.name, ')
+		$query = "SELECT `uni`.uid, `uni`.name, count(*) as `Number of members`
+		FROM `bf_user_info`, `bf_university` as `uni`
+		WHERE `bf_user_info`.kairosmemberinfo_UniversityID = `uni`.uid
+		GROUP BY `uni`.uid";
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_university')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		if ($limit == $offset && $limit == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			$query = $query . " limit " . $offset . " , " . $limit;
+		}
+		
+		$query = $this->db->query($query);
+		return $query->result();
+	}
+	
+	public function membersInUniversity($uni_ID, $limit = 0, $offset = 0)
+	{
+		$query = "SELECT `usr`.uid, `usr`.kairosmemberinfo_firstname, `usr`.kairosmemberinfo_middlename, `usr`.kairosmemberinfo_lastname, `uni`.name
+		FROM `bf_user_info` as `usr`, `bf_university` as `uni`
+		WHERE `usr`.kairosmemberinfo_UniversityID = `uni`.uid
+		AND `uni`.uid = " . $uni_ID;
+		
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_user_info')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		if ($limit == $offset && $limit == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			$query = $query . " limit " . $offset . " , " . $limit;
+		}
+		
+		$query = $this->db->query($query);
+		return $query->result();
+	}
 	
 	public function select_nation($nid)
 	{
@@ -230,5 +340,6 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 		return $result;
 	}
+	
 }
 
