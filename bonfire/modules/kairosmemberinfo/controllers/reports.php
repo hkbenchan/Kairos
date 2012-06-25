@@ -321,13 +321,13 @@ class reports extends Admin_Controller {
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
-		$pagination_config['total_rows'] = count($query);
+		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
+		$this->pagination_config['total_rows'] = count($query);
 
 
-		$this->pagination->initialize($pagination_config); 
+		$this->pagination->initialize($this->pagination_config); 
 		
-		$query = $this->kairosmemberinfo_model->groupByUniversity($pagination_config['per_page'], $this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], $this->uri->segment(5));
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View University');
 		Template::set_view('reports/query/groupByUniversity');
@@ -346,12 +346,12 @@ class reports extends Admin_Controller {
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
 			$this->load->library('pagination');
 			
-			$pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
-			$pagination_config['total_rows'] = count($query);
-			$pagination_config['uri_segment'] = 6;
+			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
+			$this->pagination_config['total_rows'] = count($query);
+			$this->pagination_config['uri_segment'] = 6;
 
-			$this->pagination->initialize($pagination_config);
-			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$pagination_config['per_page'], $this->uri->segment(6));
+			$this->pagination->initialize($this->pagination_config);
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], $this->uri->segment(6));
 			//print_r($query);die();
 			Template::set('records',$query);
 		}
@@ -370,12 +370,12 @@ class reports extends Admin_Controller {
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewVentureOwner';
-		$pagination_config['total_rows'] = count($query);
+		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewVentureOwner';
+		$this->pagination_config['total_rows'] = count($query);
 
-		$this->pagination->initialize($pagination_config); 
+		$this->pagination->initialize($this->pagination_config); 
 		
-		$query = $this->kairosmemberinfo_model->groupByUniversity($pagination_config['per_page'], $this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], $this->uri->segment(5));
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View Venture Owner');
 		Template::set_view('reports/query/groupByUniversity');
