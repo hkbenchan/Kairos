@@ -251,6 +251,36 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query->result();
 	}
 	
+	public function allVentureOwner($limit = 0 , $offset = 0)
+	{
+		$query = "SELECT `info`.uid, `info`.`kairosmemberinfo_firstname`, `info`.`kairosmemberinfo_middlename`, `info`.`kairosmemberinfo_lastname`, `venture`.vid, `venture`.name
+		from `bf_user_info` as `info`, `bf_venture` as `venture`
+		where `info`.kairosmemberinfo_ownVenture = 'T' AND
+		`info`.uid = `venture`.uid";
+		
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_university')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		if ($limit == $offset && $limit == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			$query = $query . " limit " . $offset . " , " . $limit;
+		}
+		
+		$query = $this->db->query($query);
+		return $query->result();
+		
+	}
+	
+	
 	public function select_nation($nid)
 	{
 		$this->db->where('nid',$nid);
