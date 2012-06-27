@@ -283,7 +283,7 @@ class Kairosmemberinfo_model extends BF_Model {
 	public function groupByIndustry($limit = 0, $offset = 0)
 	{
 		$query = "SELECT v.IndustryID, i.name as IndustryName, count(*) as `Number of members`
-		from KairosDatabase.bf_venture as v, KairosDatabase.bf_industry as i
+		from bf_venture as v, bf_industry as i
 		where v.IndustryID = i.iid
 		group by v.IndustryID";
 		
@@ -311,9 +311,9 @@ class Kairosmemberinfo_model extends BF_Model {
 	
 	public function membersInIndustry($industry_ID, $limit = 0, $offset = 0)
 	{
-		$query = "select v.name, v.IndustryID, i.name as IndustryName,
+		$query = "SELECT v.name, v.IndustryID, i.name as IndustryName,
 		u.kairosmemberinfo_firstname, u.kairosmemberinfo_middlename, u.kairosmemberinfo_lastname, u.uid
-		from KairosDatabase.bf_venture as v, KairosDatabase.bf_industry as i, KairosDatabase.bf_user_info as u
+		from bf_venture as v, bf_industry as i, bf_user_info as u
 		where v.uid = u.uid
 		and v.IndustryID = i.iid
 		and i.iid = " . $industry_ID;
