@@ -280,6 +280,65 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 	}
 	
+	public function groupByIndustry($limit = 0, $offset = 0)
+	{
+		$query = "SELECT v.IndustryID, i.name as IndustryName, count(*) as `Number of members`
+		from KairosDatabase.bf_venture as v, KairosDatabase.bf_industry as i
+		where v.IndustryID = i.iid
+		group by v.IndustryID";
+		
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_industry')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		if ($limit == $offset && $limit == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			$query = $query . " limit " . $offset . " , " . $limit;
+		}
+		
+		$query = $this->db->query($query);
+		return $query->result();
+		
+	}
+	
+	public function membersInIndustry($industry_ID, $limit = 0, $offset = 0)
+	{
+		$query = "select v.name, v.IndustryID, i.name as IndustryName,
+		u.kairosmemberinfo_firstname, u.kairosmemberinfo_middlename, u.kairosmemberinfo_lastname, u.uid
+		from KairosDatabase.bf_venture as v, KairosDatabase.bf_industry as i, KairosDatabase.bf_user_info as u
+		where v.uid = u.uid
+		and v.IndustryID = i.iid
+		and i.iid = " . $industry_ID;
+		
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_user_info')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		if ($limit == $offset && $limit == 0)
+		{
+			//do nothing
+		}
+		else
+		{
+			$query = $query . " limit " . $offset . " , " . $limit;
+		}
+		
+		$query = $this->db->query($query);
+		return $query->result();
+	}
+	
 	
 	public function select_nation($nid)
 	{
