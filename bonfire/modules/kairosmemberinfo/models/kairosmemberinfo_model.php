@@ -65,9 +65,9 @@ class Kairosmemberinfo_model extends BF_Model {
 	}
 
 
-	public function insert($data)
+	public function insert($id, $data)
 	{
-		$uid = $this->auth->user_id();
+		$uid = $id;
 		
 		/* user_info data */
 		$insert_array_user_info = array(
@@ -127,15 +127,24 @@ class Kairosmemberinfo_model extends BF_Model {
 		return 1;
 	}
 	
-	public function update($entry_id,$data)
+	public function update($id,$data)
 	{
-		return $this->insert($data);
+		return $this->insert($id,$data);
 	}
 	
-	public function find($uid)
+	public function find($type, $id)
 	{
-		$user_info = $this->select_user_info($uid);
-		$venture = $this->select_venture($uid);
+		if ($type == "user")
+		{
+			$user_info = $this->select_user_info($id);
+			$venture = $this->select_venture($id);
+		}
+		elseif ($type == "rec")
+		{
+			$user_info = $this->db->get_where('bf_user_info', array('entry_id' => $id));
+			$user_id = $user_info[0]->uid;
+			$venture = $this->select_venture($user_id);
+		}
 		if (isset($user_info[0]->kairosmemberinfo_nationalityID))
 			$nation = $this->select_nation($user_info[0]->kairosmemberinfo_nationalityID);
 		if (isset($user_info[0]->kairosmemberinfo_UniversityID))

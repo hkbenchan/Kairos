@@ -451,7 +451,7 @@ class reports extends Admin_Controller {
 		if (!empty($detailID))
 		{
 			//get that user info
-			$result = $this->kairosmemberinfo_model->find($detailID);
+			$result = $this->kairosmemberinfo_model->find('user',$detailID);
 			if (count($result)>0)
 			{
 				Template::set('records', $result);

@@ -61,7 +61,7 @@ class content extends Admin_Controller {
 			}
 		}
 		
-		$records = $this->kairosmemberinfo_model->find($this->auth->user_id());
+		$records = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
 		
 		//print_r($records); die();
 
@@ -141,9 +141,17 @@ class content extends Admin_Controller {
 	public function edit()
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Edit');
-
+		
 		$id = $this->uri->segment(5);
-
+		$role = $this->auth->role_id();
+		if (!empty($id) && ($id != $this->auth->user_id())){
+			if (($role != 1) && ($role != 6))
+			{
+				Template::set_message(lang('kairosmemberinfo_edit_permission_error'), 'error');
+				$id = $this->auth->user_id();
+			};
+		};
+		
 		if (empty($id))
 		{
 			Template::set_message(lang('kairosmemberinfo_invalid_id'), 'error');
@@ -165,8 +173,9 @@ class content extends Admin_Controller {
 				Template::set_message(lang('kairosmemberinfo_edit_failure') . $this->kairosmemberinfo_model->error, 'error');
 			}
 		}
-		$uid = $this->auth->user_id();
-		$result = $this->kairosmemberinfo_model->find($uid);
+		
+		//$uid = $this->auth->user_id();
+		$result = $this->kairosmemberinfo_model->find('user', $id);
 		
 		// break down the dob
 		$dob = explode('-',$result['kairosmemberinfo_dob']);
@@ -315,7 +324,7 @@ class content extends Admin_Controller {
 		
 		if ($type == 'insert')
 		{
-			$id = $this->kairosmemberinfo_model->insert($data);
+			$id = $this->kairosmemberinfo_model->insert($this->auth->user_id(),$data);
 
 			if (is_numeric($id))
 			{

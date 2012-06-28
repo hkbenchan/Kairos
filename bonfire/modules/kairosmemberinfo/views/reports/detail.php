@@ -86,7 +86,7 @@
 			<tfoot>
 				<tr>
 					<td colspan="2">
-					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['entry_id'], '<i class="icon-pencil">&nbsp;</i>' .  'EDIT') ?>
+					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], '<i class="icon-pencil">&nbsp;</i>' .  'EDIT') ?>
 					</td>
 				</tr>
 			</tfoot>

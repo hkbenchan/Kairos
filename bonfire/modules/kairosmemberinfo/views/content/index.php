@@ -87,7 +87,7 @@
 				<?php if ($this->auth->has_permission('KairosMemberInfo.Content.Delete')) : ?>
 				<tr>
 					<td>
-					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['entry_id'], '<i class="icon-pencil">&nbsp;</i> EDIT') ?>
+					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], '<i class="icon-pencil">&nbsp;</i> EDIT') ?>
 					</td>
 					<td>
 						<input type="submit" name="delete" id="delete-me" class="btn btn-danger" value="<?php echo lang('bf_action_delete') ?>" onclick="return confirm('<?php echo lang('kairosmemberinfo_delete_confirm'); ?>')">
@@ -96,7 +96,7 @@
 				<?php else: ?>
 				<tr>
 					<td colspan="2">
-					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['entry_id'], '<i class="icon-pencil">&nbsp;</i>' .  $records['kairosmemberinfo_firstname']) ?>
+					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], '<i class="icon-pencil">&nbsp;</i>' .  $records['kairosmemberinfo_firstname']) ?>
 					</td>
 				</tr>
 				<?php endif;?>

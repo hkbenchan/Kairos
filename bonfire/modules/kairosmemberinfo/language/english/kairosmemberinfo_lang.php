@@ -24,7 +24,7 @@ $lang['kairosmemberinfo_delete_record']			= 'Delete this KairosMemberInfo';
 $lang['kairosmemberinfo_delete_confirm']			= 'Are you sure you want to delete this kairosmemberinfo?';
 $lang['kairosmemberinfo_edit_heading']			= 'Edit KairosMemberInfo';
 $lang['kairosmemberinfo_delete_not_auth']		= 'You do not have permission to delete this record.';
-
+$lang['kairosmemberinfo_edit_permission_error'] = 'You do not have permission to edit other\'s profile. Redirect back to your profile.';
 // Activities
 $lang['kairosmemberinfo_act_create_record']			= 'Created record with ID';
 $lang['kairosmemberinfo_act_edit_record']			= 'Updated record with ID';
