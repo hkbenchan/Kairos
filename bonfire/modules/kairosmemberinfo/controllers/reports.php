@@ -37,42 +37,6 @@ class reports extends Admin_Controller {
 	*/
 	public function index()
 	{
-		/*
-		// Deleting anything?
-		if ($action = $this->input->post('delete'))
-		{
-			if ($action == 'Delete')
-			{
-				$checked = $this->input->post('checked');
-
-				if (is_array($checked) && count($checked))
-				{
-					$result = FALSE;
-					foreach ($checked as $pid)
-					{
-						$result = $this->kairosmemberinfo_model->delete($pid);
-					}
-
-					if ($result)
-					{
-						Template::set_message(count($checked) .' '. lang('kairosmemberinfo_delete_success'), 'success');
-					}
-					else
-					{
-						Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
-					}
-				}
-				else
-				{
-					Template::set_message(lang('kairosmemberinfo_delete_error') . $this->kairosmemberinfo_model->error, 'error');
-				}
-			}
-		}
-
-		$records = $this->kairosmemberinfo_model->find_all();
-		
-		Template::set('records', $records);
-*/
 		$reportOptions = $this->kairosmemberinfo_model->getReportOptions();
 		Template::set('records', $reportOptions);
 //		print_r($reportOptions); die();
@@ -92,27 +56,9 @@ class reports extends Admin_Controller {
 	public function create()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Create');
-		/*
-		if ($this->input->post('submit'))
-		{
-			if ($insert_id = $this->save_kairosmemberinfo())
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_record').': ' . $insert_id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_create_success'), 'success');
-				Template::redirect(SITE_AREA .'/reports/kairosmemberinfo');
-			}
-			else
-			{
-				Template::set_message(lang('kairosmemberinfo_create_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
-
-		Template::set('toolbar_title', lang('kairosmemberinfo_create') . ' KairosMemberInfo');
-		Template::render();
-		*/
+		
+		Template::set_message('You cannot create anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
 
 	//--------------------------------------------------------------------
@@ -127,35 +73,9 @@ class reports extends Admin_Controller {
 	public function edit()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Edit');
-		/*
-		$id = $this->uri->segment(5);
-
-		if (empty($id))
-		{
-			Template::set_message(lang('kairosmemberinfo_invalid_id'), 'error');
-			redirect(SITE_AREA .'/reports/kairosmemberinfo');
-		}
-
-		if ($this->input->post('submit'))
-		{
-			if ($this->save_kairosmemberinfo('update', $id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_edit_success'), 'success');
-			}
-			else
-			{
-				Template::set_message(lang('kairosmemberinfo_edit_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-
-		Template::set('kairosmemberinfo', $this->kairosmemberinfo_model->find($id));
-		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
-		*/
-		Template::set('toolbar_title', lang('kairosmemberinfo_edit') . ' KairosMemberInfo');
-		Template::render();
+		
+		Template::set_message('You cannot edit anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
 
 	//--------------------------------------------------------------------
@@ -170,106 +90,10 @@ class reports extends Admin_Controller {
 	public function delete()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Delete');
-		/*
-		$id = $this->uri->segment(5);
 
-		if (!empty($id))
-		{
-
-			if ($this->kairosmemberinfo_model->delete($id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_delete_success'), 'success');
-			} else
-			{
-				Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-
-		redirect(SITE_AREA .'/reports/kairosmemberinfo');
-		*/
+		Template::set_message('You cannot delete anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
-
-	//--------------------------------------------------------------------
-
-
-	//--------------------------------------------------------------------
-	// !PRIVATE METHODS
-	//--------------------------------------------------------------------
-
-	/*
-		Method: save_kairosmemberinfo()
-
-		Does the actual validation and saving of form data.
-
-		Parameters:
-			$type	- Either "insert" or "update"
-			$id		- The ID of the record to update. Not needed for inserts.
-
-		Returns:
-			An INT id for successful inserts. If updating, returns TRUE on success.
-			Otherwise, returns FALSE.
-	*/ /*
-	private function save_kairosmemberinfo($type='insert', $id=0)
-	{
-		if ($type == 'update') {
-			$_POST['id'] = $id;
-		}
-
-		
-		$this->form_validation->set_rules('kairosmemberinfo_surname','Surname','required|trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_middlename','Middle Name','trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_lastname','Last name','required|trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_dob','Date Of Birth','required|trim|xss_clean|max_length[8]');
-		$this->form_validation->set_rules('kairosmemberinfo_nationality_id','Nationality','required|trim|xss_clean|max_length[10]');
-		$this->form_validation->set_rules('kairosmemberinfo_gender','Gender','required|max_length[1]');
-		$this->form_validation->set_rules('kairosmemberinfo_University','University','required|trim|xss_clean|max_length[255]');
-		$this->form_validation->set_rules('kairosmemberinfo_yearOfStudy','Year of Study','required|trim|xss_clean|max_length[6]');
-		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]');
-		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','required|trim|xss_clean|max_length[1]');
-
-		if ($this->form_validation->run() === FALSE)
-		{
-			return FALSE;
-		}
-
-		// make sure we only pass in the fields we want
-		
-		$data = array();
-		$data['kairosmemberinfo_surname']        = $this->input->post('kairosmemberinfo_surname');
-		$data['kairosmemberinfo_middlename']        = $this->input->post('kairosmemberinfo_middlename');
-		$data['kairosmemberinfo_lastname']        = $this->input->post('kairosmemberinfo_lastname');
-		$data['kairosmemberinfo_dob']        = $this->input->post('kairosmemberinfo_dob') ? $this->input->post('kairosmemberinfo_dob') : '0000-00-00';
-		$data['kairosmemberinfo_nationality_id']        = $this->input->post('kairosmemberinfo_nationality_id');
-		$data['kairosmemberinfo_gender']        = $this->input->post('kairosmemberinfo_gender');
-		$data['kairosmemberinfo_University']        = $this->input->post('kairosmemberinfo_University');
-		$data['kairosmemberinfo_yearOfStudy']        = $this->input->post('kairosmemberinfo_yearOfStudy');
-		$data['kairosmemberinfo_phoneNo']        = $this->input->post('kairosmemberinfo_phoneNo');
-		$data['kairosmemberinfo_newsletterUpdate']        = $this->input->post('kairosmemberinfo_newsletterUpdate');
-
-		if ($type == 'insert')
-		{
-			$id = $this->kairosmemberinfo_model->insert($data);
-
-			if (is_numeric($id))
-			{
-				$return = $id;
-			} else
-			{
-				$return = FALSE;
-			}
-		}
-		else if ($type == 'update')
-		{
-			$return = $this->kairosmemberinfo_model->update($id, $data);
-		}
-
-		return $return;
-	}*/
-
-	//--------------------------------------------------------------------
 
 
 	/*
@@ -320,13 +144,23 @@ class reports extends Admin_Controller {
 	public function viewGroupByUniversity()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
-		//echo "this is the group by university page";
+
 		$query = $this->kairosmemberinfo_model->groupByUniversity();
+		
+		$csv = $this->uri->segment(6);
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_University.csv';
+			$this->csvRequest($query, $name);
+			die();
+		}
+		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
 		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
-		$this->pagination_config['total_rows'] = count($query);
+		$this->pagination_config['total_rows'] = $query->num_rows();
 
 
 		$this->pagination->initialize($this->pagination_config); 
@@ -335,7 +169,7 @@ class reports extends Admin_Controller {
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View University');
 		Template::set_view('reports/query/groupByUniversity');
-		Template::set('records',$query);
+		Template::set('records',$query->result());
 		Template::render();
 		//echo $this->pagination->create_links();
 	}
@@ -348,16 +182,27 @@ class reports extends Admin_Controller {
 		if (!empty($uni_ID))
 		{
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
+			
+			$csv = $this->uri->segment(7);
+
+			if (!empty($csv))
+			{
+				$name = 'export_University_' . $uni_ID . '.csv';
+				$this->csvRequest($query, $name);
+				die();
+			}
+			
 			$this->load->library('pagination');
 			
 			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
-			$this->pagination_config['total_rows'] = count($query);
+			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], $this->uri->segment(6));
 			//print_r($query);die();
-			Template::set('records',$query);
+			Template::set('records',$query->result());
+			Template::set('universityID', $uni_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this University');
 		Template::set_view('reports/query/viewUniversity');
@@ -370,11 +215,21 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$query = $this->kairosmemberinfo_model->allVentureOwner();
+		
+		$csv = $this->uri->segment(6);
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_venture.csv';
+			$this->csvRequest($query, $name);
+			die();
+		}
+		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
 		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewVentureOwner';
-		$this->pagination_config['total_rows'] = count($query);
+		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
 		
@@ -382,7 +237,7 @@ class reports extends Admin_Controller {
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View Venture Owner');
 		Template::set_view('reports/query/viewAllVenture');
-		Template::set('records',$query);
+		Template::set('records',$query->result());
 		Template::render();
 	}
 	
@@ -392,11 +247,20 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$query = $this->kairosmemberinfo_model->groupByIndustry();
+		$csv = $this->uri->segment(6);
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_industry.csv';
+			$this->csvRequest($query, $name);
+			die();
+		}
+		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
 		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByIndustry';
-		$this->pagination_config['total_rows'] = count($query);
+		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
 		
@@ -404,7 +268,7 @@ class reports extends Admin_Controller {
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View Venture Owner');
 		Template::set_view('reports/query/groupByIndustry');
-		Template::set('records',$query);
+		Template::set('records',$query->result());
 		Template::render();
 		
 	}
@@ -414,20 +278,31 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$industry_ID = $this->uri->segment(5);
-
+		$csv = $this->uri->segment(7);
+		
 		if (!empty($industry_ID))
 		{
 			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID);
+			
+			if (!empty($csv))
+			{
+				$name = 'export_Industry_id_' . $industry_ID . '.csv';
+				$this->csvRequest($query, $name);
+				die();
+			}
+			
+			
 			$this->load->library('pagination');
 
 			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewIndustry';
-			$this->pagination_config['total_rows'] = count($query);
+			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], $this->uri->segment(6));
 			//print_r($query);die();
-			Template::set('records',$query);
+			Template::set('records',$query->result());
+			Template::set('industryID', $industry_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this Industry');
 		Template::set_view('reports/query/viewIndustry');
@@ -447,14 +322,22 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$detailID = $this->uri->segment(5);
+		$csv = $this->uri->segment(6);
 		
 		if (!empty($detailID))
 		{
 			//get that user info
 			$result = $this->kairosmemberinfo_model->find('user',$detailID);
-			if (count($result)>0)
+			if (!empty($csv))
 			{
-				Template::set('records', $result);
+				$name = 'export_detail_uid_' . $detailID . '.csv';
+				$this->csvRequest($result, $name);
+				die();
+			}
+			
+			if (count($result->row_array())>0)
+			{
+				Template::set('records', $result->row_array());
 			}
 		}
 		
@@ -463,4 +346,49 @@ class reports extends Admin_Controller {
 		Template::render();
 		
 	}
+	
+	public function csvRequest($data, $name = 'export.csv')
+	{
+		$file;
+		$error;
+		if (!$this->csvExporter($file,$error,$data))
+		{
+			echo 'fail';
+			die();
+		}
+		else
+		{
+			$this->load->helper('download');
+			force_download($name,$file);
+		}
+	}
+
+	/**
+	 * @param file|null $file The CSV file stored
+	 * @param array|null $error The error will be stored (if any)
+	 * @param array $data The data that need to convert into CSV
+	 * @return boolean The operation is successful or not
+	 */
+
+	public function csvExporter(&$file,&$error, $data)
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+
+		if (count($data) == 0)
+		{
+			$error = array('message' => 'Data is empty');
+			return false;
+		}
+
+		$delimiter = ",";
+		$newline = "\r\n";
+
+		$this->load->dbutil();
+
+		$file = $this->dbutil->csv_from_result($data,$delimiter,$newline);
+		return true;
+	}
+	
+	
+	
 }

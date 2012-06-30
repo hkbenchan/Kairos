@@ -85,8 +85,11 @@
 			<?php if (isset($records) && is_array($records) && count($records)) : ?>
 			<tfoot>
 				<tr>
-					<td colspan="2">
+					<td>
 					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], '<i class="icon-pencil">&nbsp;</i>' .  'EDIT') ?>
+					</td>
+					<td>
+					<?php echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/detail/' . $records['uid'] . '/1', 'Export to CSV'); ?>
 					</td>
 				</tr>
 			</tfoot>

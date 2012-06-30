@@ -63,9 +63,10 @@ class content extends Admin_Controller {
 		
 		$records = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
 		
-		//print_r($records); die();
 
-		Template::set('records', $records);
+		//print_r($records->result()); die();
+
+		Template::set('records', $records->row_array());
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 		
@@ -175,7 +176,7 @@ class content extends Admin_Controller {
 		}
 		
 		//$uid = $this->auth->user_id();
-		$result = $this->kairosmemberinfo_model->find('user', $id);
+		$result = $this->kairosmemberinfo_model->find('user', $id)->row_array();;
 		
 		// break down the dob
 		$dob = explode('-',$result['kairosmemberinfo_dob']);

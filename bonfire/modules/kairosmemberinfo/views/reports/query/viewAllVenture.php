@@ -14,8 +14,11 @@
 			
 			<tfoot>
 				<tr>
-					<td colspan = "2">
+					<td>
 					<?php echo $this->pagination->create_links(); ?>
+					</td>
+					<td>
+					<?php echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/viewVentureOwner/0/1', 'Export to CSV'); ?>
 					</td>
 				</tr>
 			</tfoot>

@@ -25,8 +25,11 @@
 			
 			<tfoot>
 				<tr>
-					<td colspan = "2">
+					<td colspan = "1">
 					<?php echo $this->pagination->create_links(); ?>
+					</td>
+					<td>
+					<?php echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/viewUniversity/' . $universityID . '/0/1', 'Export to CSV'); ?>
 					</td>
 				</tr>
 			</tfoot>
