@@ -28,7 +28,7 @@
 //------------------------------------------------------------------------
 
 $config['user_meta_fields'] =  array(
-	array(
+	/*array(
 		'name'   => 'street_name',
 		'label'   => lang('user_meta_street_name'),
 		'rules'   => 'trim|max_length[100]|xss_clean',
@@ -93,5 +93,5 @@ $config['user_meta_fields'] =  array(
                   'xlarge' => 'Extra Large Shirt',
                 ),
 		),
-	),
+	),*/
 );
