@@ -12,6 +12,7 @@ class content extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Content.View');
 		$this->load->model('kairosmemberinfo_model', null, true);
 		$this->lang->load('kairosmemberinfo');
+		$this->load->helper('security');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
 			Assets::add_js('jquery-ui-1.8.13.min.js');
@@ -143,7 +144,7 @@ class content extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Edit');
 		
-		$id = $this->uri->segment(5);
+		$id = xss_clean($this->uri->segment(5));
 		$role = $this->auth->role_id();
 		if (!empty($id) && ($id != $this->auth->user_id())){
 			if (($role != 1) && ($role != 6))
@@ -212,7 +213,7 @@ class content extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Delete');
 
-		$id = $this->uri->segment(5);
+		$id = xss_clean($this->uri->segment(5));
 
 		if (!empty($id))
 		{

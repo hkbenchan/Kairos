@@ -20,6 +20,7 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		$this->load->model('kairosmemberinfo_model', null, true);
 		$this->lang->load('kairosmemberinfo');
+		$this->load->helper('security');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
 			Assets::add_js('jquery-ui-1.8.13.min.js');
@@ -104,13 +105,13 @@ class reports extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
-		$reportID = $this->uri->segment(5);
+		$reportID = xss_clean($this->uri->segment(5));
 		
 		if (!empty($reportID))
 		{
 			// get the report type
 			//echo $reportID;
-			$result = $this->kairosmemberinfo_model->getReportTypeByID($reportID);
+			$result = $this->kairosmemberinfo_model->getReportOptions($reportID);
 			//print_r($result);
 			
 			// check if the ID is valid
@@ -128,6 +129,10 @@ class reports extends Admin_Controller {
 				{
 					Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/viewGroupByIndustry');
 				}
+				elseif ($reportID == 7)
+				{
+					Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/viewAllUsers');
+				}
 			}
 			// get all the data required and prepare for pagination
 			
@@ -135,10 +140,7 @@ class reports extends Admin_Controller {
 			// render the page
 			
 		}
-		else
-		{
-			
-		}
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/');
 	}
 	
 	public function viewGroupByUniversity()
@@ -147,7 +149,7 @@ class reports extends Admin_Controller {
 
 		$query = $this->kairosmemberinfo_model->groupByUniversity();
 		
-		$csv = $this->uri->segment(6);
+		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($csv))
 		{
@@ -165,7 +167,7 @@ class reports extends Admin_Controller {
 
 		$this->pagination->initialize($this->pagination_config); 
 		
-		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], $this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View University');
 		Template::set_view('reports/query/groupByUniversity');
@@ -177,13 +179,13 @@ class reports extends Admin_Controller {
 	public function viewUniversity()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
-		$uni_ID = $this->uri->segment(5);
+		$uni_ID = xss_clean($this->uri->segment(5));
 		
 		if (!empty($uni_ID))
 		{
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
 			
-			$csv = $this->uri->segment(7);
+			$csv = xss_clean($this->uri->segment(7));
 
 			if (!empty($csv))
 			{
@@ -199,7 +201,7 @@ class reports extends Admin_Controller {
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
-			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], $this->uri->segment(6));
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
 			Template::set('records',$query->result());
 			Template::set('universityID', $uni_ID);
@@ -216,7 +218,7 @@ class reports extends Admin_Controller {
 		
 		$query = $this->kairosmemberinfo_model->allVentureOwner();
 		
-		$csv = $this->uri->segment(6);
+		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($csv))
 		{
@@ -233,7 +235,7 @@ class reports extends Admin_Controller {
 
 		$this->pagination->initialize($this->pagination_config); 
 		
-		$query = $this->kairosmemberinfo_model->allVentureOwner($this->pagination_config['per_page'], $this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->allVentureOwner($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View Venture Owner');
 		Template::set_view('reports/query/viewAllVenture');
@@ -247,7 +249,7 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$query = $this->kairosmemberinfo_model->groupByIndustry();
-		$csv = $this->uri->segment(6);
+		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($csv))
 		{
@@ -264,7 +266,7 @@ class reports extends Admin_Controller {
 
 		$this->pagination->initialize($this->pagination_config); 
 		
-		$query = $this->kairosmemberinfo_model->groupByIndustry($this->pagination_config['per_page'], $this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->groupByIndustry($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
 		Template::set('toolbar_title', 'View Venture Owner');
 		Template::set_view('reports/query/groupByIndustry');
@@ -277,8 +279,8 @@ class reports extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
-		$industry_ID = $this->uri->segment(5);
-		$csv = $this->uri->segment(7);
+		$industry_ID = xss_clean($this->uri->segment(5));
+		$csv = xss_clean($this->uri->segment(7));
 		
 		if (!empty($industry_ID))
 		{
@@ -299,7 +301,7 @@ class reports extends Admin_Controller {
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
-			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], $this->uri->segment(6));
+			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
 			Template::set('records',$query->result());
 			Template::set('industryID', $industry_ID);
@@ -309,6 +311,38 @@ class reports extends Admin_Controller {
 		Template::render();
 
 	}
+	
+	
+	public function viewAllUsers()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$query = $this->kairosmemberinfo_model->getAllUsers();
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_users.csv';
+			$this->csvRequest($query, $name);
+			die();
+		}
+		
+		$this->load->library('pagination');
+		//$this->load->library('table');
+		
+		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewAllUsers';
+		$this->pagination_config['total_rows'] = $query->num_rows();
+
+		$this->pagination->initialize($this->pagination_config); 
+		
+		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		//print_r($query); die();
+		Template::set('toolbar_title', 'View All Users');
+		Template::set_view('reports/query/viewAllUsers');
+		Template::set('records',$query->result());
+		Template::render();
+	}
+	
 	
 	/**
 	*
@@ -321,8 +355,8 @@ class reports extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
-		$detailID = $this->uri->segment(5);
-		$csv = $this->uri->segment(6);
+		$detailID = xss_clean($this->uri->segment(5));
+		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($detailID))
 		{

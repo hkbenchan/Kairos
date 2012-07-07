@@ -15,43 +15,57 @@ class Kairosmemberinfo_model extends BF_Model {
 			'reportID' => 1,
 			'reportName' => 'Select by UserID',
 			'reportDescription' => 'Show all detail of a member',
-			'display' => FALSE
+			'display' => FALSE,
+			'link' => '\/detail\/',
 		),
 		
 		'2' => array(
 			'reportID' => 2,
 			'reportName' => 'Group by University',
 			'reportDescription' => 'Group by University and show the number of members in that university',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewGroupByUniversity\/',
 		),
 		
 		'3' => array(
 			'reportID' => 3,
 			'reportName' => 'Filter out by University',
 			'reportDescription' => 'Select members in that university',
-			'display' => FALSE
+			'display' => FALSE,
+			'link' => '',
 		),
 		
 		'4' => array(
 			'reportID' => 4,
 			'reportName' => 'Select all venture owner',
 			'reportDescription' => 'Show all members who own venture',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewVentureOwner\/',
 		),
 		
 		'5' => array(
 			'reportID' => 5,
 			'reportName' => 'Group by Industry of Venture',
 			'reportDescription' => 'Group by Industry of Venture and show the number of venture in that industry',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewGroupByIndustry\/',
 		),
 		
 		'6' => array(
 			'reportID' => 6,
 			'reportName' => 'Filter out by Industry of Venture',
 			'reportDescription' => 'Select members in that Industry of Venture',
-			'display' => FALSE
-		)
+			'display' => FALSE,
+			'link' => '',
+		),
+		
+		'7' => array(
+			'reportID' => 7,
+			'reportName' => 'View all users',
+			'reportDescription' => 'View all users',
+			'display' => TRUE,
+			'link' => '\/viewAllUsers\/',
+		),
 	);
 
 	public function getReportOptions()
@@ -233,8 +247,6 @@ class Kairosmemberinfo_model extends BF_Model {
 	
 	public function allVentureOwner($limit = 0 , $offset = 0)
 	{
-		
-		
 		if (!is_numeric($limit))
 		{
 			$limit = $this->db->get('bf_university')->num_rows();
@@ -341,6 +353,26 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
+	public function getAllUsers($limit = 0 , $offset = 0)
+	{
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_user_info')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality')
+			->from('bf_user_info info')
+			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
+			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
+			->limit($limit,$offset);
+		$query = $this->db->get();
+		
+		return $query;
+	}
 
 	private function findWithoutVenture($uid)
 	{
