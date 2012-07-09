@@ -21,6 +21,8 @@ class reports extends Admin_Controller {
 		$this->load->model('kairosmemberinfo_model', null, true);
 		$this->lang->load('kairosmemberinfo');
 		$this->load->helper('security');
+		$this->load->helper('exporter');
+		$this->load->library('info_display');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
 			Assets::add_js('jquery-ui-1.8.13.min.js');
@@ -39,8 +41,8 @@ class reports extends Admin_Controller {
 	public function index()
 	{
 		$reportOptions = $this->kairosmemberinfo_model->getReportOptions();
+		
 		Template::set('records', $reportOptions);
-//		print_r($reportOptions); die();
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 	}
@@ -154,24 +156,27 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_University.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
 		$this->load->library('pagination');
-		//$this->load->library('table');
-		
 		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
 		$this->pagination_config['total_rows'] = $query->num_rows();
-
-
 		$this->pagination->initialize($this->pagination_config); 
-		
 		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
-		//print_r($query); die();
+		
+		
+		$config_header = array (
+			'University Name' => 'name',
+			'Number of Members' => 'Number of members',
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		
 		Template::set('toolbar_title', 'View University');
-		Template::set_view('reports/query/groupByUniversity');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
+		Template::set('display_data',$sequencer);
 		Template::render();
 		//echo $this->pagination->create_links();
 	}
@@ -190,7 +195,7 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_University_' . $uni_ID . '.csv';
-				$this->csvRequest($query, $name);
+				csvRequest($query, $name);
 				die();
 			}
 			
@@ -203,11 +208,20 @@ class reports extends Admin_Controller {
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
-			Template::set('records',$query->result());
-			Template::set('universityID', $uni_ID);
+			
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+			
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('universityID', $uni_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this University');
-		Template::set_view('reports/query/viewUniversity');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 		
 	}
@@ -223,7 +237,7 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_venture.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
@@ -254,7 +268,7 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_industry.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
@@ -289,7 +303,7 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_Industry_id_' . $industry_ID . '.csv';
-				$this->csvRequest($query, $name);
+				csvRequest($query, $name);
 				die();
 			}
 			
@@ -323,7 +337,7 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_users.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
@@ -365,7 +379,7 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_detail_uid_' . $detailID . '.csv';
-				$this->csvRequest($result, $name);
+				csvRequest($result, $name);
 				die();
 			}
 			
@@ -380,49 +394,4 @@ class reports extends Admin_Controller {
 		Template::render();
 		
 	}
-	
-	public function csvRequest($data, $name = 'export.csv')
-	{
-		$file;
-		$error;
-		if (!$this->csvExporter($file,$error,$data))
-		{
-			echo 'fail';
-			die();
-		}
-		else
-		{
-			$this->load->helper('download');
-			force_download($name,$file);
-		}
-	}
-
-	/**
-	 * @param file|null $file The CSV file stored
-	 * @param array|null $error The error will be stored (if any)
-	 * @param array $data The data that need to convert into CSV
-	 * @return boolean The operation is successful or not
-	 */
-
-	public function csvExporter(&$file,&$error, $data)
-	{
-		$this->auth->restrict('KairosMemberInfo.Reports.View');
-
-		if (count($data) == 0)
-		{
-			$error = array('message' => 'Data is empty');
-			return false;
-		}
-
-		$delimiter = ",";
-		$newline = "\r\n";
-
-		$this->load->dbutil();
-
-		$file = $this->dbutil->csv_from_result($data,$delimiter,$newline);
-		return true;
-	}
-	
-	
-	
 }

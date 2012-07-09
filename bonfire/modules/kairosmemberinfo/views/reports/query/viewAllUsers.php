@@ -41,7 +41,7 @@
 					{$name .= " " . $rec->{'kairosmemberinfo_middlename'};}; ?>
 				<?php $name .= " " . $rec->{'kairosmemberinfo_lastname'}; ?>
 				
-				<td><?php echo anchor(SITE_AREA .'/reports/kairosmemberinfo/viewUniversity/'. $rec->uid, $name) ?></td>
+				<td><?php echo anchor(SITE_AREA .'/reports/kairosmemberinfo/detail/'. $rec->uid, $name) ?></td>
 			
 				<td><?php echo $rec->{'kairosmemberinfo_dob'}; ?></td>
 				<td><?php echo $rec->{'kairosmemberinfo_gender'}; ?></td>

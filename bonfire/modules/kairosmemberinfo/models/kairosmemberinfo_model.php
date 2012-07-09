@@ -235,7 +235,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			$offset = 0;
 		}
 		
-		$this->db->select('usr.uid, usr.kairosmemberinfo_firstname, usr.kairosmemberinfo_middlename, usr.kairosmemberinfo_lastname, uni.name')
+		$this->db->select('usr.uid, CONCAT_WS(" ", usr.`kairosmemberinfo_firstname`, usr.`kairosmemberinfo_middlename`, usr.`kairosmemberinfo_lastname`) as `kairosmemberinfo_name`, uni.name', false)
 			->from('bf_user_info usr')
 			->join('bf_university uni','usr.kairosmemberinfo_UniversityID = uni.uid')
 			->where('uni.uid', $uni_ID)
@@ -256,8 +256,8 @@ class Kairosmemberinfo_model extends BF_Model {
 			$offset = 0;
 		}
 		
-		$this->db->select('info.uid, info.kairosmemberinfo_firstname, info.kairosmemberinfo_middlename,
-			info.kairosmemberinfo_lastname, venture.vid, venture.name')
+		$this->db->select('info.uid, CONCAT_WS(" ", info.kairosmemberinfo_firstname, info.kairosmemberinfo_middlename,
+			info.kairosmemberinfo_lastname) as `kairosmemberinfo_name`, venture.vid, venture.name', false)
 			->from('bf_user_info AS info')
 			->join('bf_venture venture', 'info.uid = venture.uid')
 			->where('info.kairosmemberinfo_ownVenture', 'T')
@@ -304,8 +304,8 @@ class Kairosmemberinfo_model extends BF_Model {
 		}
 		
 		$this->db->select('v.name, v.IndustryID, i.name IndustryName,
-			user.kairosmemberinfo_firstname, user.kairosmemberinfo_middlename, user.kairosmemberinfo_lastname,
-			user.uid')
+			CONCAT_WS(" ",user.kairosmemberinfo_firstname,user.kairosmemberinfo_middlename,user.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+			user.uid',false)
 			->from('bf_venture AS v')
 			->join('bf_user_info user', 'v.uid = user.uid')
 			->join('bf_industry i', 'v.IndustryID = i.iid')
@@ -364,10 +364,15 @@ class Kairosmemberinfo_model extends BF_Model {
 			$offset = 0;
 		}
 		
-		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality')
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality, 
+		v.name AS kairosmemberinfo_ventureName, v.descr as kairosmemberinfo_ventureDescr, v.IndustryID as kairosmemberinfo_IndustryID,
+		CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+		ind.name as kairosmemberinfo_ventureIndustry', false)
 			->from('bf_user_info info')
 			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
 			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
+			->join('bf_venture v', 'info.uid = v.uid', 'left')
+			->join('bf_industry ind', 'v.IndustryID = ind.iid', 'left')
 			->limit($limit,$offset);
 		$query = $this->db->get();
 		
@@ -376,7 +381,8 @@ class Kairosmemberinfo_model extends BF_Model {
 
 	private function findWithoutVenture($uid)
 	{
-		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality')
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality,
+			CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name', false)
 			->from('bf_user_info info')
 			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
 			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
@@ -390,7 +396,8 @@ class Kairosmemberinfo_model extends BF_Model {
 	{
 		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality,
 			v.name AS kairosmemberinfo_ventureName, v.descr as kairosmemberinfo_ventureDescr, v.IndustryID as kairosmemberinfo_IndustryID,
-			ind.name as kairosmemberinfo_ventureIndustry')
+			CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+			ind.name as kairosmemberinfo_ventureIndustry',false)
 			->from('bf_user_info info')
 			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
 			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
