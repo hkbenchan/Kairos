@@ -6,7 +6,7 @@ class Info_display {
 		$name store the sequence of the data that want to display
 		$data the array that contains the data
 		
-		url_index: { row => { header_id => url } }
+		url_index: { header_id => { static_url + variable(get from data) }  }
 	*/
 	
 	public function set_sequence($name,$data, $url_index = array())
@@ -14,7 +14,7 @@ class Info_display {
 		$result_array = array(
 			'header' => $name,
 			'data' => $data,
-			'url' => $url_index,
+			'url' => array(),
 		);
 		
 		/*foreach ($name as $display => $data_ref)
@@ -22,7 +22,11 @@ class Info_display {
 			$result_array['header'][] = $display;
 		}
 		*/
-		
+		foreach ($url_index as $header_id => $a){
+			$url = $a['url'];
+			$var = $a['variable'];
+			$result_array['url'][$header_id] = array( 'url' => $url, 'var' => $var) ;
+		}
 		echo '<pre>' . print_r($result_array,TRUE) . '</pre>';
 		
 		//die();
