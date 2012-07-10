@@ -308,6 +308,29 @@ class Migration_Insert_initial_value extends Migration {
 		);
 		
 		$this->db->insert_batch('bf_country',$data_c);
+		
+		$data_p = array (
+			array (
+				'description' => 'International experience',
+			),
+			array (
+				'description' => 'Learning workshop/Skill training',
+			),
+			array (
+				'description' => 'Entrepreneurship/Business competition',
+			),
+			array (
+				'description' => 'Entrepreneurs\' talk/Industry insight talk',
+			),
+			array (
+				'description' => 'Incubation services',
+			),
+			array (
+				'description' => 'Start-up internship',
+			),
+		);
+		
+		$this-db->insert_batch('bf_preference',$data_p);
 	}
 
 	//--------------------------------------------------------------------
@@ -319,5 +342,7 @@ class Migration_Insert_initial_value extends Migration {
 		$this->db->empty_table('bf_university');
 		$this->db->empty_table('bf_industry');
 		$this->db->empty_table('bf_country');
+		$this->db->empty_table('bf_user_preference');
+		$this->db->empty_table('bf_preference');
 	}
 }
