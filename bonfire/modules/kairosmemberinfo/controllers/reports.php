@@ -251,9 +251,18 @@ class reports extends Admin_Controller {
 		
 		$query = $this->kairosmemberinfo_model->allVentureOwner($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
+		
+		$config_header = array (
+			'Venture Name' => 'name',
+			'Venture Owner' => 'kairosmemberinfo_name',
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+			
+		Template::set('display_data',$sequencer);
+		
 		Template::set('toolbar_title', 'View Venture Owner');
-		Template::set_view('reports/query/viewAllVenture');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 	}
 	
@@ -282,9 +291,18 @@ class reports extends Admin_Controller {
 		
 		$query = $this->kairosmemberinfo_model->groupByIndustry($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
-		Template::set('toolbar_title', 'View Venture Owner');
-		Template::set_view('reports/query/groupByIndustry');
-		Template::set('records',$query->result());
+		
+		$config_header = array (
+			'Industry Name' => 'IndustryName',
+			'Number of Members' => 'Number of members',
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		
+		Template::set('display_data',$sequencer);
+		
+		Template::set('toolbar_title', 'Group By Industry');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 		
 	}
@@ -317,11 +335,19 @@ class reports extends Admin_Controller {
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
-			Template::set('records',$query->result());
-			Template::set('industryID', $industry_ID);
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+				'Venture Name' => 'name',
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('industryID', $industry_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this Industry');
-		Template::set_view('reports/query/viewIndustry');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 
 	}
@@ -351,9 +377,25 @@ class reports extends Admin_Controller {
 		
 		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
+		
+		$config_header = array (
+			'Name' => 'kairosmemberinfo_name',
+			'Date of Birth (YYYY-DD-MM)' => 'kairosmemberinfo_dob',
+			'Gender' => 'kairosmemberinfo_gender',
+			'Year of Study' => 'kairosmemberinfo_yearOfStudy',
+			'Phone Number' => 'kairosmemberinfo_phoneNo',
+			'Skills' => 'kairosmemberiunfo_skills',
+			'University' => 'kairosmemberinfo_University',
+			'Country' => 'kairosmemberinfo_nationality',
+			'Own Venture(T/F)' => 'kairosmemberinfo_ownVenture',
+			'Newsletter Update' => 'kairosmemberinfo_newsletterUpdate',
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		Template::set('display_data',$sequencer);
+		
 		Template::set('toolbar_title', 'View All Users');
-		Template::set_view('reports/query/viewAllUsers');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 	}
 	
