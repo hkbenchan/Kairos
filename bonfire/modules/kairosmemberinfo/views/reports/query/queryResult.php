@@ -28,7 +28,8 @@
 			</tfoot>
 			<tbody>
 
-			<?php if (isset($display_data) && is_array($display_data) && count($display_data)) : ?>
+			<?php if (isset($display_data) && is_array($display_data) && count($display_data) 
+				&& isset($display_data['data']) && is_array($display_data['data']) && count($display_data['data'])): ?>
 			<?php $display_header = $display_data['header']; ?>
 			<?php $display_url = $display_data['url']; ?>
 			<?php if (isset($display_url) && is_array($display_url) && count($display_url)) : ?>
@@ -43,7 +44,9 @@
 				<?php foreach ($display_header as $display_name => $name) : ?>
 					<td>
 						<?php if (array_key_exists($i, $url_config)): ?>
-							<?php /* get the static url */ $static = $url_config[$i]['url']; $var = $url_config[$i]['var']; $variable = $rec->{"$var"}; ?>
+							<?php /* get the static url */ 
+								$static = $url_config[$i]['url']; $var = $url_config[$i]['var']; $variable = $rec->{"$var"}; 
+							?>
 							<?php echo anchor($static . $variable, $rec->{"$name"}); ?>
 						<?php else: ?>
 							<?php echo $rec->{"$name"}; ?>

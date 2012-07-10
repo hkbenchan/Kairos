@@ -27,7 +27,7 @@ class Info_display {
 			$var = $a['variable'];
 			$result_array['url'][$header_id] = array( 'url' => $url, 'var' => $var) ;
 		}
-		echo '<pre>' . print_r($result_array,TRUE) . '</pre>';
+		//echo '<pre>' . print_r($result_array,TRUE) . '</pre>';
 		
 		//die();
 		

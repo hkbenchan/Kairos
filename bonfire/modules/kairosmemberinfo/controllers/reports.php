@@ -161,18 +161,24 @@ class reports extends Admin_Controller {
 		}
 		
 		$this->load->library('pagination');
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByUniversity';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 		$this->pagination->initialize($this->pagination_config); 
 		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		
-		
 		$config_header = array (
 			'University Name' => 'name',
-			'Number of Members' => 'Number of members',
+			'Number of Members' => 'NumberOfMembers',
 		);
 
-		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewUniversity/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 		
 		Template::set('toolbar_title', 'View University');
 		Template::set_view('reports/query/queryResult');
@@ -201,7 +207,7 @@ class reports extends Admin_Controller {
 			
 			$this->load->library('pagination');
 			
-			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewUniversity';
 			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
@@ -214,8 +220,14 @@ class reports extends Admin_Controller {
 				'Name' => 'kairosmemberinfo_name',
 			);
 
-			$sequencer = $this->info_display->set_sequence($config_header,$query->result());
-			
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 			
 			Template::set('display_data',$sequencer);
 			//Template::set('universityID', $uni_ID);
@@ -244,7 +256,7 @@ class reports extends Admin_Controller {
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewVentureOwner';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewVentureOwner';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
@@ -257,7 +269,14 @@ class reports extends Admin_Controller {
 			'Venture Owner' => 'kairosmemberinfo_name',
 		);
 
-		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 			
 		Template::set('display_data',$sequencer);
 		
@@ -284,7 +303,7 @@ class reports extends Admin_Controller {
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByIndustry';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByIndustry';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
@@ -294,10 +313,17 @@ class reports extends Admin_Controller {
 		
 		$config_header = array (
 			'Industry Name' => 'IndustryName',
-			'Number of Members' => 'Number of members',
+			'Number of Members' => 'NumberOfMembers',
 		);
 
-		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewIndustry/',
+				'variable' => 'IndustryID',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 		
 		Template::set('display_data',$sequencer);
 		
@@ -328,7 +354,7 @@ class reports extends Admin_Controller {
 			
 			$this->load->library('pagination');
 
-			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewIndustry';
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewIndustry';
 			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
@@ -341,7 +367,14 @@ class reports extends Admin_Controller {
 				'Venture Name' => 'name',
 			);
 
-			$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 			
 			Template::set('display_data',$sequencer);
 			//Template::set('industryID', $industry_ID);
@@ -370,7 +403,7 @@ class reports extends Admin_Controller {
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewAllUsers';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewAllUsers';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
@@ -384,14 +417,21 @@ class reports extends Admin_Controller {
 			'Gender' => 'kairosmemberinfo_gender',
 			'Year of Study' => 'kairosmemberinfo_yearOfStudy',
 			'Phone Number' => 'kairosmemberinfo_phoneNo',
-			'Skills' => 'kairosmemberiunfo_skills',
+			'Skills' => 'kairosmemberinfo_skills',
 			'University' => 'kairosmemberinfo_University',
 			'Country' => 'kairosmemberinfo_nationality',
 			'Own Venture(T/F)' => 'kairosmemberinfo_ownVenture',
 			'Newsletter Update' => 'kairosmemberinfo_newsletterUpdate',
 		);
+		
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
 
-		$sequencer = $this->info_display->set_sequence($config_header,$query->result());
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 		Template::set('display_data',$sequencer);
 		
 		Template::set('toolbar_title', 'View All Users');

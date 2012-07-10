@@ -100,8 +100,8 @@ class Kairosmemberinfo_model extends BF_Model {
 			'kairosmemberinfo_newsletterUpdate' => $data['kairosmemberinfo_newsletterUpdate'],
 			
 		);
-		
-		if (count($this->select_user_info($uid)) > 0)
+		//echo '<pre>'.print_r($insert_array_user_info,TRUE).'</pre>';
+		if ($this->select_user_info($uid)->num_rows() > 0)
 		{
 			// update
 			$this->db->where('uid',$uid);
@@ -125,7 +125,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			);
 			
 			// check if the table contains the record
-			if (count($this->select_venture($uid)) > 0)
+			if ($this->select_venture($uid)->num_rows() > 0)
 			{
 				// update
 				$this->db->where('uid',$uid);
@@ -137,7 +137,7 @@ class Kairosmemberinfo_model extends BF_Model {
 				$this->db->insert('bf_venture', $insert_array_venture);
 			}
 		}
-		
+		//die();
 		return 1;
 	}
 	
@@ -151,6 +151,10 @@ class Kairosmemberinfo_model extends BF_Model {
 		if ($type == "user")
 		{
 			$user_info = $this->select_user_info($id);
+			if ($user_info->num_rows() <= 0)
+			{
+				return null;
+			}
 			$user_info_rel = $user_info->result();
 			$venture = $user_info_rel[0]->kairosmemberinfo_ownVenture;
 			$user_id = $id;
@@ -158,6 +162,10 @@ class Kairosmemberinfo_model extends BF_Model {
 		elseif ($type == "rec")
 		{
 			$user_info = $this->db->get_where('bf_user_info', array('entry_id' => $id));
+			if ($user_info->num_rows() <= 0)
+			{
+				return null;
+			}
 			$user_info_rel = $user_info->result();
 			$user_id = $user_info_rel[0]->uid;
 			$venture = $user_info_rel[0]->kairosmemberinfo_ownVenture;//$this->select_venture($user_id);
@@ -176,7 +184,7 @@ class Kairosmemberinfo_model extends BF_Model {
 	{
 		$d_v = $this->select_venture($uid);
 		
-		if (count($d_v)>0) {
+		if ($d_v->num_rows()>0) {
 			$this->db->where('uid',$uid);
 			$this->db->delete('bf_venture');
 		}
@@ -191,7 +199,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		$this->db->where('entry_id',$entry_id);
 		$this->db->where('uid',$uid);
 		$query = $this->db->select('bf_user_info');
-		if (count($query->result())>0)
+		if ($query->num_rows() >0)
 		{
 			return TRUE;
 		}
@@ -213,10 +221,11 @@ class Kairosmemberinfo_model extends BF_Model {
 			$offset = 0;
 		}
 		
-		$this->db->select('uni.uid, uni.name, count(*) as `Number of members`', FALSE)
+		$this->db->select('uni.uid, uni.name, count(*) as NumberOfMembers', FALSE)
 			->from('bf_user_info ui')
 			->join('bf_university uni','ui.kairosmemberinfo_UniversityID = uni.uid')
 			->group_by('uni.uid')
+			->order_by("NumberOfMembers",'DESC')
 			->limit($limit,$offset);
 		$query = $this->db->get();
 		
@@ -239,6 +248,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			->from('bf_user_info usr')
 			->join('bf_university uni','usr.kairosmemberinfo_UniversityID = uni.uid')
 			->where('uni.uid', $uni_ID)
+			->order_by('usr.uid','ASC')
 			->limit($limit,$offset);
 		$query = $this->db->get();
 		
@@ -261,6 +271,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			->from('bf_user_info AS info')
 			->join('bf_venture venture', 'info.uid = venture.uid')
 			->where('info.kairosmemberinfo_ownVenture', 'T')
+			->order_by('info.uid','ASC')
 			->limit($limit, $offset);
 		$query = $this->db->get();
 
@@ -281,10 +292,11 @@ class Kairosmemberinfo_model extends BF_Model {
 			$offset = 0;
 		}		
 		
-		$this->db->select('v.IndustryID, i.name as IndustryName, count(*) as `Number of members`', FALSE)
+		$this->db->select('v.IndustryID, i.name as IndustryName, count(*) as NumberOfMembers', FALSE)
 			->from('bf_venture AS v')
 			->join('bf_industry i', 'v.IndustryID = i.iid')
 			->group_by('v.IndustryID')
+			->order_by('NumberOfMembers','DESC')
 			->limit($limit, $offset);
 		$query = $this->db->get();
 		
@@ -310,6 +322,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			->join('bf_user_info user', 'v.uid = user.uid')
 			->join('bf_industry i', 'v.IndustryID = i.iid')
 			->where('i.iid', $industry_ID)
+			->order_by('user.uid', 'ASC')
 			->limit($limit,$offset);
 		$query = $this->db->get();
 
@@ -373,6 +386,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
 			->join('bf_venture v', 'info.uid = v.uid', 'left')
 			->join('bf_industry ind', 'v.IndustryID = ind.iid', 'left')
+			->order_by('info.uid', 'ASC')
 			->limit($limit,$offset);
 		$query = $this->db->get();
 		
