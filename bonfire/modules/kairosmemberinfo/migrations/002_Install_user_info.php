@@ -121,7 +121,8 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->drop_table('industry');
 		$this->dbforge->drop_table('CV');
 		$this->dbforge->drop_table('university');
-
+		$this->dbforge->drop_table('user_preference');
+		$this->dbforge->drop_table('preference');
 	}
 
 	//--------------------------------------------------------------------
