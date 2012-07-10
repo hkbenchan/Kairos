@@ -15,43 +15,57 @@ class Kairosmemberinfo_model extends BF_Model {
 			'reportID' => 1,
 			'reportName' => 'Select by UserID',
 			'reportDescription' => 'Show all detail of a member',
-			'display' => FALSE
+			'display' => FALSE,
+			'link' => '\/detail\/',
 		),
 		
 		'2' => array(
 			'reportID' => 2,
 			'reportName' => 'Group by University',
 			'reportDescription' => 'Group by University and show the number of members in that university',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewGroupByUniversity\/',
 		),
 		
 		'3' => array(
 			'reportID' => 3,
 			'reportName' => 'Filter out by University',
 			'reportDescription' => 'Select members in that university',
-			'display' => FALSE
+			'display' => FALSE,
+			'link' => '',
 		),
 		
 		'4' => array(
 			'reportID' => 4,
 			'reportName' => 'Select all venture owner',
 			'reportDescription' => 'Show all members who own venture',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewVentureOwner\/',
 		),
 		
 		'5' => array(
 			'reportID' => 5,
 			'reportName' => 'Group by Industry of Venture',
 			'reportDescription' => 'Group by Industry of Venture and show the number of venture in that industry',
-			'display' => TRUE
+			'display' => TRUE,
+			'link' => '\/viewGroupByIndustry\/',
 		),
 		
 		'6' => array(
 			'reportID' => 6,
 			'reportName' => 'Filter out by Industry of Venture',
 			'reportDescription' => 'Select members in that Industry of Venture',
-			'display' => FALSE
-		)
+			'display' => FALSE,
+			'link' => '',
+		),
+		
+		'7' => array(
+			'reportID' => 7,
+			'reportName' => 'View all users',
+			'reportDescription' => 'View all users',
+			'display' => TRUE,
+			'link' => '\/viewAllUsers\/',
+		),
 	);
 
 	public function getReportOptions()
@@ -86,8 +100,8 @@ class Kairosmemberinfo_model extends BF_Model {
 			'kairosmemberinfo_newsletterUpdate' => $data['kairosmemberinfo_newsletterUpdate'],
 			
 		);
-		
-		if (count($this->select_user_info($uid)) > 0)
+		//echo '<pre>'.print_r($insert_array_user_info,TRUE).'</pre>';
+		if ($this->select_user_info($uid)->num_rows() > 0)
 		{
 			// update
 			$this->db->where('uid',$uid);
@@ -111,7 +125,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			);
 			
 			// check if the table contains the record
-			if (count($this->select_venture($uid)) > 0)
+			if ($this->select_venture($uid)->num_rows() > 0)
 			{
 				// update
 				$this->db->where('uid',$uid);
@@ -123,7 +137,7 @@ class Kairosmemberinfo_model extends BF_Model {
 				$this->db->insert('bf_venture', $insert_array_venture);
 			}
 		}
-		
+		//die();
 		return 1;
 	}
 	
@@ -134,53 +148,13 @@ class Kairosmemberinfo_model extends BF_Model {
 	
 	public function find($type, $id)
 	{
-/*		if ($type == "user")
-		{
-			$user_info = $this->select_user_info($id);
-			$user_info_rel = $user_info->result();
-			$venture = $this->select_venture($id);
-			$venture_rel = $venture->result();
-		}
-		elseif ($type == "rec")
-		{
-			$user_info = $this->db->get_where('bf_user_info', array('entry_id' => $id));
-			$user_info_rel = $user_info->result();
-			$user_id = $user_info_rel[0]->uid;
-			$venture = $this->select_venture($user_id);
-			$venture_rel = $venture->result();
-		}
-		if (isset($user_info_rel[0]->kairosmemberinfo_nationalityID))
-			$nation = $this->select_nation($user_info[0]->kairosmemberinfo_nationalityID)->result();
-		if (isset($user_info_rel[0]->kairosmemberinfo_UniversityID))
-			$university = $this->select_uni($user_info[0]->kairosmemberinfo_UniversityID)->result();
-		if (isset($venture_rel[0]->IndustryID))
-			$industry = $this->select_industry($venture[0]->IndustryID)->result();
-		
-		// combine results
-		if (count($user_info) && count($venture)) {
-			$result = $this->join_user_info_and_venture($user_info,$venture);
-			$result['kairosmemberinfo_University'] = $university[0]->name;
-			$result['kairosmemberinfo_nationality'] = $nation[0]->name;
-			$result['kairosmemberinfo_ventureIndustry'] = $industry[0]->name;
-//			print_r($result); die();
-			return $result;
-		}
-		elseif (count($user_info))
-		{
-			$result = $this->join_user_info_and_venture($user_info,$venture);
-			$result['kairosmemberinfo_University'] = $university[0]->name;
-			$result['kairosmemberinfo_nationality'] = $nation[0]->name;
-			$result['kairosmemberinfo_ventureIndustry'] = '';
-			return $result;
-		}
-		else
-		{
-			return $user_info;
-		}
-*/
 		if ($type == "user")
 		{
 			$user_info = $this->select_user_info($id);
+			if ($user_info->num_rows() <= 0)
+			{
+				return null;
+			}
 			$user_info_rel = $user_info->result();
 			$venture = $user_info_rel[0]->kairosmemberinfo_ownVenture;
 			$user_id = $id;
@@ -188,6 +162,10 @@ class Kairosmemberinfo_model extends BF_Model {
 		elseif ($type == "rec")
 		{
 			$user_info = $this->db->get_where('bf_user_info', array('entry_id' => $id));
+			if ($user_info->num_rows() <= 0)
+			{
+				return null;
+			}
 			$user_info_rel = $user_info->result();
 			$user_id = $user_info_rel[0]->uid;
 			$venture = $user_info_rel[0]->kairosmemberinfo_ownVenture;//$this->select_venture($user_id);
@@ -206,14 +184,14 @@ class Kairosmemberinfo_model extends BF_Model {
 	{
 		$d_v = $this->select_venture($uid);
 		
-		if (count($d_v)>0) {
+		if ($d_v->num_rows()>0) {
 			$this->db->where('uid',$uid);
 			$this->db->delete('bf_venture');
 		}
 		
 		$this->db->where('uid',$uid);
 		$this->db->delete('bf_user_info');
-		return 1;
+		return $this->db->affected_rows() == 1;
 	}
 	
 	public function authroizeDelete($entry_id, $uid)
@@ -221,7 +199,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		$this->db->where('entry_id',$entry_id);
 		$this->db->where('uid',$uid);
 		$query = $this->db->select('bf_user_info');
-		if (count($query->result())>0)
+		if ($query->num_rows() >0)
 		{
 			return TRUE;
 		}
@@ -233,11 +211,7 @@ class Kairosmemberinfo_model extends BF_Model {
 	
 	public function groupByUniversity($limit = 0, $offset = 0)
 	{
-		//$this->db->select('university.name, ')
-		$query = "SELECT `uni`.uid, `uni`.name, count(*) as `Number of members`
-		FROM `bf_user_info`, `bf_university` as `uni`
-		WHERE `bf_user_info`.kairosmemberinfo_UniversityID = `uni`.uid
-		GROUP BY `uni`.uid";
+		
 		if (!is_numeric($limit))
 		{
 			$limit = $this->db->get('bf_university')->num_rows();
@@ -246,25 +220,20 @@ class Kairosmemberinfo_model extends BF_Model {
 		{
 			$offset = 0;
 		}
-		if ($limit == $offset && $limit == 0)
-		{
-			//do nothing
-		}
-		else
-		{
-			$query = $query . " limit " . $offset . " , " . $limit;
-		}
 		
-		$query = $this->db->query($query);
+		$this->db->select('uni.uid, uni.name, count(*) as NumberOfMembers', FALSE)
+			->from('bf_user_info ui')
+			->join('bf_university uni','ui.kairosmemberinfo_UniversityID = uni.uid')
+			->group_by('uni.uid')
+			->order_by("NumberOfMembers",'DESC')
+			->limit($limit,$offset);
+		$query = $this->db->get();
+		
 		return $query;
 	}
 	
 	public function membersInUniversity($uni_ID, $limit = 0, $offset = 0)
 	{
-		$query = "SELECT `usr`.uid, `usr`.kairosmemberinfo_firstname, `usr`.kairosmemberinfo_middlename, `usr`.kairosmemberinfo_lastname, `uni`.name
-		FROM `bf_user_info` as `usr`, `bf_university` as `uni`
-		WHERE `usr`.kairosmemberinfo_UniversityID = `uni`.uid
-		AND `uni`.uid = " . $uni_ID;
 		
 		if (!is_numeric($limit))
 		{
@@ -274,26 +243,20 @@ class Kairosmemberinfo_model extends BF_Model {
 		{
 			$offset = 0;
 		}
-		if ($limit == $offset && $limit == 0)
-		{
-			//do nothing
-		}
-		else
-		{
-			$query = $query . " limit " . $offset . " , " . $limit;
-		}
 		
-		$query = $this->db->query($query);
+		$this->db->select('usr.uid, CONCAT_WS(" ", usr.`kairosmemberinfo_firstname`, usr.`kairosmemberinfo_middlename`, usr.`kairosmemberinfo_lastname`) as `kairosmemberinfo_name`, uni.name', false)
+			->from('bf_user_info usr')
+			->join('bf_university uni','usr.kairosmemberinfo_UniversityID = uni.uid')
+			->where('uni.uid', $uni_ID)
+			->order_by('usr.uid','ASC')
+			->limit($limit,$offset);
+		$query = $this->db->get();
+		
 		return $query;
 	}
 	
 	public function allVentureOwner($limit = 0 , $offset = 0)
 	{
-		$query = "SELECT `info`.uid, `info`.`kairosmemberinfo_firstname`, `info`.`kairosmemberinfo_middlename`, `info`.`kairosmemberinfo_lastname`, `venture`.vid, `venture`.name
-		from `bf_user_info` as `info`, `bf_venture` as `venture`
-		where `info`.kairosmemberinfo_ownVenture = 'T' AND
-		`info`.uid = `venture`.uid";
-		
 		if (!is_numeric($limit))
 		{
 			$limit = $this->db->get('bf_university')->num_rows();
@@ -302,26 +265,23 @@ class Kairosmemberinfo_model extends BF_Model {
 		{
 			$offset = 0;
 		}
-		if ($limit == $offset && $limit == 0)
-		{
-			//do nothing
-		}
-		else
-		{
-			$query = $query . " limit " . $offset . " , " . $limit;
-		}
 		
-		$query = $this->db->query($query);
+		$this->db->select('info.uid, CONCAT_WS(" ", info.kairosmemberinfo_firstname, info.kairosmemberinfo_middlename,
+			info.kairosmemberinfo_lastname) as `kairosmemberinfo_name`, venture.vid, venture.name', false)
+			->from('bf_user_info AS info')
+			->join('bf_venture venture', 'info.uid = venture.uid')
+			->where('info.kairosmemberinfo_ownVenture', 'T')
+			->order_by('info.uid','ASC')
+			->limit($limit, $offset);
+		$query = $this->db->get();
+
 		return $query;
 		
 	}
 	
 	public function groupByIndustry($limit = 0, $offset = 0)
 	{
-		$query = "SELECT v.IndustryID, i.name as IndustryName, count(*) as `Number of members`
-		from bf_venture as v, bf_industry as i
-		where v.IndustryID = i.iid
-		group by v.IndustryID";
+		
 		
 		if (!is_numeric($limit))
 		{
@@ -330,30 +290,22 @@ class Kairosmemberinfo_model extends BF_Model {
 		if (!is_numeric($offset))
 		{
 			$offset = 0;
-		}
-		if ($limit == $offset && $limit == 0)
-		{
-			//do nothing
-		}
-		else
-		{
-			$query = $query . " limit " . $offset . " , " . $limit;
-		}
+		}		
 		
-		$query = $this->db->query($query);
+		$this->db->select('v.IndustryID, i.name as IndustryName, count(*) as NumberOfMembers', FALSE)
+			->from('bf_venture AS v')
+			->join('bf_industry i', 'v.IndustryID = i.iid')
+			->group_by('v.IndustryID')
+			->order_by('NumberOfMembers','DESC')
+			->limit($limit, $offset);
+		$query = $this->db->get();
+		
 		return $query;
 		
 	}
 	
 	public function membersInIndustry($industry_ID, $limit = 0, $offset = 0)
 	{
-		$query = "SELECT v.name, v.IndustryID, i.name as IndustryName,
-		u.kairosmemberinfo_firstname, u.kairosmemberinfo_middlename, u.kairosmemberinfo_lastname, u.uid
-		from bf_venture as v, bf_industry as i, bf_user_info as u
-		where v.uid = u.uid
-		and v.IndustryID = i.iid
-		and i.iid = " . $industry_ID;
-		
 		if (!is_numeric($limit))
 		{
 			$limit = $this->db->get('bf_user_info')->num_rows();
@@ -362,16 +314,18 @@ class Kairosmemberinfo_model extends BF_Model {
 		{
 			$offset = 0;
 		}
-		if ($limit == $offset && $limit == 0)
-		{
-			//do nothing
-		}
-		else
-		{
-			$query = $query . " limit " . $offset . " , " . $limit;
-		}
 		
-		$query = $this->db->query($query);
+		$this->db->select('v.name, v.IndustryID, i.name IndustryName,
+			CONCAT_WS(" ",user.kairosmemberinfo_firstname,user.kairosmemberinfo_middlename,user.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+			user.uid',false)
+			->from('bf_venture AS v')
+			->join('bf_user_info user', 'v.uid = user.uid')
+			->join('bf_industry i', 'v.IndustryID = i.iid')
+			->where('i.iid', $industry_ID)
+			->order_by('user.uid', 'ASC')
+			->limit($limit,$offset);
+		$query = $this->db->get();
+
 		return $query;
 	}
 	
@@ -388,8 +342,6 @@ class Kairosmemberinfo_model extends BF_Model {
 	{
 		$this->db->where('uid', $uid);
 		$query = $this->db->get('bf_venture');
-		/*$query = "SELECT * from `bf_venture`, `bf_industry` where `bf_venture`.uid = " . $uid . " AND `bf_venture`.IndustryID = `bf_industry`.iid";
-		$query = $this->db->query($query);*/
 		return $query;
 	}
 
@@ -411,36 +363,62 @@ class Kairosmemberinfo_model extends BF_Model {
 	{
 		$this->db->where('uid', $id);
 		$query = $this->db->get('bf_user_info');
-		/*if (count($query->result()) > 0)
-		{*/
 		return $query;
 	}
 	
+	public function getAllUsers($limit = 0 , $offset = 0)
+	{
+		if (!is_numeric($limit))
+		{
+			$limit = $this->db->get('bf_user_info')->num_rows();
+		}
+		if (!is_numeric($offset))
+		{
+			$offset = 0;
+		}
+		
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality, 
+		v.name AS kairosmemberinfo_ventureName, v.descr as kairosmemberinfo_ventureDescr, v.IndustryID as kairosmemberinfo_IndustryID,
+		CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+		ind.name as kairosmemberinfo_ventureIndustry', false)
+			->from('bf_user_info info')
+			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
+			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
+			->join('bf_venture v', 'info.uid = v.uid', 'left')
+			->join('bf_industry ind', 'v.IndustryID = ind.iid', 'left')
+			->order_by('info.uid', 'ASC')
+			->limit($limit,$offset);
+		$query = $this->db->get();
+		
+		return $query;
+	}
 
 	private function findWithoutVenture($uid)
 	{
-		$query = "SELECT `info`.*, `uni`.name as `kairosmemberinfo_University`, `nat`.name as `kairosmemberinfo_nationality`
-		FROM `bf_user_info` as `info`, `bf_university` as `uni`, `bf_country` as `nat`
-		where `info`.kairosmemberinfo_UniversityID =`uni`.uid
-		and `info`.kairosmemberinfo_nationalityID = `nat`.nid
-		and `info`.uid = " . $uid;
-		
-		$query = $this->db->query($query);
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality,
+			CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name', false)
+			->from('bf_user_info info')
+			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
+			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
+			->where('info.uid', $uid);
+		$query = $this->db->get();
 		
 		return $query;
 	}
 	
 	private function findWithVenture($uid)
 	{
-		$query = "SELECT `info`.*, `uni`.name as `kairosmemberinfo_University`, `nat`.name as `kairosmemberinfo_nationality`, `v`.name as `kairosmemberinfo_ventureName`, `v`.descr as `kairosmemberinfo_ventureDescr`, `v`.IndustryID as `kairosmemberinfo_IndustryID`, `ind`.name as `kairosmemberinfo_ventureIndustry`
-		FROM `bf_user_info` as `info`, `bf_university` as `uni`, `bf_country` as `nat`, `bf_venture` as `v`, `bf_industry` as `ind`
-		where `info`.kairosmemberinfo_UniversityID =`uni`.uid
-		and `info`.kairosmemberinfo_nationalityID = `nat`.nid
-		and `info`.uid = `v`.uid
-		and `v`.IndustryID = `ind`.iid
-		and `info`.uid = ". $uid;
-		
-		$query = $this->db->query($query);
+		$this->db->select('info.*, uni.name AS kairosmemberinfo_University, nation.name AS kairosmemberinfo_nationality,
+			v.name AS kairosmemberinfo_ventureName, v.descr as kairosmemberinfo_ventureDescr, v.IndustryID as kairosmemberinfo_IndustryID,
+			CONCAT_WS(" ",info.kairosmemberinfo_firstname,info.kairosmemberinfo_middlename,info.kairosmemberinfo_lastname) as kairosmemberinfo_name,
+			ind.name as kairosmemberinfo_ventureIndustry',false)
+			->from('bf_user_info info')
+			->join('bf_university uni', 'info.kairosmemberinfo_UniversityID = uni.uid')
+			->join('bf_country nation', 'info.kairosmemberinfo_nationalityID = nation.nid')
+			->join('bf_venture v', 'info.uid = v.uid')
+			->join('bf_industry ind', 'v.IndustryID = ind.iid')
+			->where('info.uid', $uid);
+		$query = $this->db->get();
 		
 		return $query;
 	}

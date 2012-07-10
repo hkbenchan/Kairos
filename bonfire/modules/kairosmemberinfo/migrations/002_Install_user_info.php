@@ -121,7 +121,8 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->drop_table('industry');
 		$this->dbforge->drop_table('CV');
 		$this->dbforge->drop_table('university');
-
+		$this->dbforge->drop_table('user_preference');
+		$this->dbforge->drop_table('preference');
 	}
 
 	//--------------------------------------------------------------------
@@ -166,7 +167,20 @@ class Migration_Install_user_info extends Migration {
 		FOREIGN KEY (`IndustryID`) REFERENCES bf_industry(`iid`) ON DELETE RESTRICT ON UPDATE NO ACTION
 		)";
 		
+		/* Preference table */
+		$queries[] = "CREATE TABLE `kairosso_membership_info`.`bf_preference` (
+		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		`description` VARCHAR( 100 ) NOT NULL
+		)";
 		
+		/* User Preference table */
+		$queries[] = "CREATE TABLE `kairosso_membership_info`.`bf_user_preference` (
+		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`uid` BIGINT( 20 ) UNSIGNED NOT NULL,
+		PRIMARY KEY (`pid`,`uid`),
+		FOREIGN KEY(`pid`) REFERENCES bf_preference(`pid`),
+		FOREIGN KEY(`uid`) REFERENCES bf_users(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		)";
 		
 		foreach ($queries as $query) {
 			$result = $this->db->query($query);

@@ -2,5 +2,8 @@
 	'description'	=> 'Information that need for all members',
 	'name'		=> 'Kairos Member Info',
 	'version'		=> '0.0.3',
-	'author'		=> 'Ben Chan'
+	'author'		=> 'Ben Chan',
+	'menu'		=> array (
+		'List' => '/kairosmemberinfo/index'
+		)
 );
