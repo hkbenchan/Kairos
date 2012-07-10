@@ -169,10 +169,13 @@ $lang['bf_model_bad_select']	= 'Invalid selection.';
 // Contexts
 //--------------------------------------------------------------------
 $lang['bf_no_contexts']			= 'The contexts array is not properly setup. Check your application config file.';
-$lang['bf_context_content']		= 'Content';
+$lang['bf_context_content']		= 'Members';
 $lang['bf_context_reports']		= 'Reports';
 $lang['bf_context_settings']	= 'Settings';
 $lang['bf_context_developer']	= 'Developer';
+$lang['bf_context_kairosmemberinfo'] = 'Your Information';
+$lang['bf_context_bugs_report']  = 'Report Bugs';
+$lang['bf_context_announcement'] = 'Announcement';
 
 //--------------------------------------------------------------------
 // Activities

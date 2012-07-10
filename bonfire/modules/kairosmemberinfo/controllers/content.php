@@ -66,8 +66,10 @@ class content extends Admin_Controller {
 		
 
 		//print_r($records->result()); die();
-
-		Template::set('records', $records->row_array());
+		if ($records != null)
+			Template::set('records', $records->row_array());
+		else
+			Template::set('records', null);
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 		

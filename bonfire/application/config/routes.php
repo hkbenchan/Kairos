@@ -59,6 +59,8 @@ $route[SITE_AREA .'/content']				= "admin/content/index";
 $route[SITE_AREA .'/reports']				= "admin/reports/index";
 $route[SITE_AREA .'/developer']				= "admin/developer/index";
 $route[SITE_AREA .'/settings']				= "settings/index";
+$route[SITE_AREA .'/kairosmemberinfo']		= "admin/content/kairosmemberinfo";
+$route[SITE_AREA .'/bugs_report']			= "admin/content/bugs_report";
 
 $route[SITE_AREA]	= SITE_AREA .'/home';
 

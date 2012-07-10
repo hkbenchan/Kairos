@@ -21,6 +21,8 @@ class reports extends Admin_Controller {
 		$this->load->model('kairosmemberinfo_model', null, true);
 		$this->lang->load('kairosmemberinfo');
 		$this->load->helper('security');
+		$this->load->helper('exporter');
+		$this->load->library('info_display');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
 			Assets::add_js('jquery-ui-1.8.13.min.js');
@@ -39,8 +41,8 @@ class reports extends Admin_Controller {
 	public function index()
 	{
 		$reportOptions = $this->kairosmemberinfo_model->getReportOptions();
+		
 		Template::set('records', $reportOptions);
-//		print_r($reportOptions); die();
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 	}
@@ -154,24 +156,33 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_University.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
 		$this->load->library('pagination');
-		//$this->load->library('table');
-		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByUniversity';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByUniversity';
 		$this->pagination_config['total_rows'] = $query->num_rows();
-
-
 		$this->pagination->initialize($this->pagination_config); 
-		
 		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
-		//print_r($query); die();
+		
+		$config_header = array (
+			'University Name' => 'name',
+			'Number of Members' => 'NumberOfMembers',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewUniversity/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		
 		Template::set('toolbar_title', 'View University');
-		Template::set_view('reports/query/groupByUniversity');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
+		Template::set('display_data',$sequencer);
 		Template::render();
 		//echo $this->pagination->create_links();
 	}
@@ -190,24 +201,39 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_University_' . $uni_ID . '.csv';
-				$this->csvRequest($query, $name);
+				csvRequest($query, $name);
 				die();
 			}
 			
 			$this->load->library('pagination');
 			
-			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewUniversity';
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewUniversity';
 			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
-			Template::set('records',$query->result());
-			Template::set('universityID', $uni_ID);
+			
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+			);
+
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('universityID', $uni_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this University');
-		Template::set_view('reports/query/viewUniversity');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 		
 	}
@@ -223,23 +249,39 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_venture.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewVentureOwner';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewVentureOwner';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
 		
 		$query = $this->kairosmemberinfo_model->allVentureOwner($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
+		
+		$config_header = array (
+			'Venture Name' => 'name',
+			'Venture Owner' => 'kairosmemberinfo_name',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+		Template::set('display_data',$sequencer);
+		
 		Template::set('toolbar_title', 'View Venture Owner');
-		Template::set_view('reports/query/viewAllVenture');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 	}
 	
@@ -254,23 +296,39 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_industry.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewGroupByIndustry';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByIndustry';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
 		
 		$query = $this->kairosmemberinfo_model->groupByIndustry($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
-		Template::set('toolbar_title', 'View Venture Owner');
-		Template::set_view('reports/query/groupByIndustry');
-		Template::set('records',$query->result());
+		
+		$config_header = array (
+			'Industry Name' => 'IndustryName',
+			'Number of Members' => 'NumberOfMembers',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewIndustry/',
+				'variable' => 'IndustryID',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		
+		Template::set('display_data',$sequencer);
+		
+		Template::set('toolbar_title', 'Group By Industry');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 		
 	}
@@ -289,25 +347,40 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_Industry_id_' . $industry_ID . '.csv';
-				$this->csvRequest($query, $name);
+				csvRequest($query, $name);
 				die();
 			}
 			
 			
 			$this->load->library('pagination');
 
-			$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewIndustry';
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewIndustry';
 			$this->pagination_config['total_rows'] = $query->num_rows();
 			$this->pagination_config['uri_segment'] = 6;
 
 			$this->pagination->initialize($this->pagination_config);
 			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
 			//print_r($query);die();
-			Template::set('records',$query->result());
-			Template::set('industryID', $industry_ID);
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+				'Venture Name' => 'name',
+			);
+
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('industryID', $industry_ID);
 		}
 		Template::set('toolbar_title', 'View Members in this Industry');
-		Template::set_view('reports/query/viewIndustry');
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 
 	}
@@ -323,23 +396,46 @@ class reports extends Admin_Controller {
 		if (!empty($csv))
 		{
 			$name = 'export_all_users.csv';
-			$this->csvRequest($query, $name);
+			csvRequest($query, $name);
 			die();
 		}
 		
 		$this->load->library('pagination');
 		//$this->load->library('table');
 		
-		$this->pagination_config['base_url'] = SITE_AREA. 'reports/kairosmemberinfo/viewAllUsers';
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewAllUsers';
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
 		
 		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
 		//print_r($query); die();
+		
+		$config_header = array (
+			'Name' => 'kairosmemberinfo_name',
+			'Date of Birth (YYYY-DD-MM)' => 'kairosmemberinfo_dob',
+			'Gender' => 'kairosmemberinfo_gender',
+			'Year of Study' => 'kairosmemberinfo_yearOfStudy',
+			'Phone Number' => 'kairosmemberinfo_phoneNo',
+			'Skills' => 'kairosmemberinfo_skills',
+			'University' => 'kairosmemberinfo_University',
+			'Country' => 'kairosmemberinfo_nationality',
+			'Own Venture(T/F)' => 'kairosmemberinfo_ownVenture',
+			'Newsletter Update' => 'kairosmemberinfo_newsletterUpdate',
+		);
+		
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		Template::set('display_data',$sequencer);
+		
 		Template::set('toolbar_title', 'View All Users');
-		Template::set_view('reports/query/viewAllUsers');
-		Template::set('records',$query->result());
+		Template::set_view('reports/query/queryResult');
 		Template::render();
 	}
 	
@@ -365,7 +461,7 @@ class reports extends Admin_Controller {
 			if (!empty($csv))
 			{
 				$name = 'export_detail_uid_' . $detailID . '.csv';
-				$this->csvRequest($result, $name);
+				csvRequest($result, $name);
 				die();
 			}
 			
@@ -380,49 +476,4 @@ class reports extends Admin_Controller {
 		Template::render();
 		
 	}
-	
-	public function csvRequest($data, $name = 'export.csv')
-	{
-		$file;
-		$error;
-		if (!$this->csvExporter($file,$error,$data))
-		{
-			echo 'fail';
-			die();
-		}
-		else
-		{
-			$this->load->helper('download');
-			force_download($name,$file);
-		}
-	}
-
-	/**
-	 * @param file|null $file The CSV file stored
-	 * @param array|null $error The error will be stored (if any)
-	 * @param array $data The data that need to convert into CSV
-	 * @return boolean The operation is successful or not
-	 */
-
-	public function csvExporter(&$file,&$error, $data)
-	{
-		$this->auth->restrict('KairosMemberInfo.Reports.View');
-
-		if (count($data) == 0)
-		{
-			$error = array('message' => 'Data is empty');
-			return false;
-		}
-
-		$delimiter = ",";
-		$newline = "\r\n";
-
-		$this->load->dbutil();
-
-		$file = $this->dbutil->csv_from_result($data,$delimiter,$newline);
-		return true;
-	}
-	
-	
-	
 }
