@@ -86,16 +86,16 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->create_table('user_info');
 		
 		/* Link bf_user_info.uid with bf_users.id */
-		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES  `kairosso_membership_info`.`bf_users` 
+		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES `bf_users` 
 		(`id`) ON DELETE CASCADE";
 		
 		/* Link bf_user_info.nationalityID with bf_country.nid */
 		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_nationalityID` ) REFERENCES  
-		`kairosso_membership_info`.`bf_country` (`nid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		`bf_country` (`nid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
 		
 		/* Link bf_user_info.UniversityID with bf_university.uid */
 		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_UniversityID` ) REFERENCES 
-		`kairosso_membership_info`.`bf_university` (`uid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		`bf_university` (`uid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
 		
 		/* execute all queries */
 		foreach ($queries as $query) {
@@ -132,32 +132,36 @@ class Migration_Install_user_info extends Migration {
 		$prefix = $this->db->dbprefix;
 		
 		/* CV table */
-		$queries[] = "CREATE TABLE  `kairosso_membership_info`.`bf_CV` (
+		$queries[] = "CREATE TABLE `bf_CV` (
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-		`file` MEDIUMBLOB,
+		`name` VARCHAR(30) NOT NULL,
+		`size` INT(11) NOT NULL,
+		`type` VARCHAR(30) NOT NULL,
+		`ext` VARCHAR(10) NOT NULL,
+		`file` MEDIUMBLOB NOT NULL,		
 		FOREIGN KEY (`uid`) REFERENCES bf_users (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 		)";
 		
 		/* University table */
-		$queries[] = "CREATE TABLE  `kairosso_membership_info`.`bf_university` (
+		$queries[] = "CREATE TABLE  `bf_university` (
 		`uid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 100 ) NOT NULL
 		)";
 		
 		/* Country table */
-		$queries[] = "CREATE TABLE  `kairosso_membership_info`.`bf_country` (
+		$queries[] = "CREATE TABLE  `bf_country` (
 		`nid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 50 ) NOT NULL
 		)";
 		
 		/* Industry table */
-		$queries[] = "CREATE TABLE  `kairosso_membership_info`.`bf_industry` (
+		$queries[] = "CREATE TABLE  `bf_industry` (
 		`iid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 100 ) NOT NULL UNIQUE
 		)";
 		
 		/* Venture table */
-		$queries[] = "CREATE TABLE  `kairosso_membership_info`.`bf_venture` (
+		$queries[] = "CREATE TABLE  `bf_venture` (
 		`vid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL,
 		`IndustryID` INT( 8 ) UNSIGNED NOT NULL,
@@ -168,13 +172,13 @@ class Migration_Install_user_info extends Migration {
 		)";
 		
 		/* Preference table */
-		$queries[] = "CREATE TABLE `kairosso_membership_info`.`bf_preference` (
+		$queries[] = "CREATE TABLE `bf_preference` (
 		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		`description` VARCHAR( 100 ) NOT NULL
 		)";
 		
 		/* User Preference table */
-		$queries[] = "CREATE TABLE `kairosso_membership_info`.`bf_user_preference` (
+		$queries[] = "CREATE TABLE `bf_user_preference` (
 		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL,
 		PRIMARY KEY (`pid`,`uid`),

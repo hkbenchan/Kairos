@@ -68,8 +68,10 @@ class content extends Admin_Controller {
 		//print_r($records->result()); die();
 		if ($records != null)
 			Template::set('records', $records->row_array());
-		else
+		else {
 			Template::set('records', null);
+			Template::set_message(lang('kairosmemberinfo_missing_part_one'), 'attention');
+		}
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 		
@@ -348,6 +350,85 @@ class content extends Admin_Controller {
 
 	//--------------------------------------------------------------------
 
+	
+	public function create_cv() {
+		$this->auth->restrict('KairosMemberInfo.Content.Create');
+		
+		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
+
+		Template::set('toolbar_title', lang('kairosmemberinfo_create_cv') . ' KairosMemberInfo');
+		Template::render();
+	}
+	
+	public function create_cv_upload() {
+		$this->auth->restrict('KairosMemberInfo.Content.Create');
+		
+		$upload_config['upload_path'] = './uploads/';
+		$upload_config['allowed_types'] = 'doc|docx|pdf';
+		$upload_config['max_size']	= '1024';
+		
+		$this->load->library('upload', $upload_config);
+		
+		if ( ! $this->upload->do_upload())
+		{
+			$error = $this->upload->display_errors();
+			Template::set_message($error,'error');
+			Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create_cv');
+		}
+		else
+		{
+			$data = $this->upload->data();
+			//echo '<pre>'. print_r($data,TRUE) .'</pre>'; 
+			
+			// open the file
+			$fp = fopen($data['full_path'],'r');
+			$content = fread($fp, filesize($data['full_path']));
+			$content = addslashes($content);
+			fclose($fp);
+
+			if(!get_magic_quotes_gpc())
+			{
+			    $fileName = addslashes($data['file_name']);
+			} else {
+				$fileName = $data['file_name'];
+			}
+			;
+
+			$insert_data = array(
+				'uid'	=> $this->auth->user_id(),
+				'name' => $fileName,
+				'size' => $data['file_size'],
+				'type' => $data['file_type'],
+				'ext' => $data['file_ext'],
+				'file' => $content,
+			);
+			$this->load->model('kairosmembercv_model',null,TRUE);
+			$result = $this->kairosmembercv_model->insert($insert_data);
+			if ($result == 0)
+			{
+				$error = lang('kairosmemberinfo_create_cv_failure');
+				Template::set_message($error,'error');
+				Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create_cv');
+			} else {
+				//log the activity
+				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_cv_record'). ': ' . $this->auth->user_id() . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
+				//remove the temp file
+				unlink($data['full_path']);
+				Template::set_message(lang('kairosmemberinfo_create_cv_success'), 'success');
+				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
+			}
+		}
+	}
+	
+	
+	private function save_kairosmembercv($type='insert',$id = 0, $file) {
+		
+		if ($type == 'update'){
+			$_POST['id'] = $id;
+		}
+		
+		//$this->form_validation->set
+	}
 
 
 }

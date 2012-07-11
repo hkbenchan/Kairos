@@ -330,7 +330,7 @@ class Migration_Insert_initial_value extends Migration {
 			),
 		);
 		
-		$this-db->insert_batch('bf_preference',$data_p);
+		$this->db->insert_batch('bf_preference',$data_p);
 	}
 
 	//--------------------------------------------------------------------
@@ -339,6 +339,7 @@ class Migration_Insert_initial_value extends Migration {
 	{
 		$prefix = $this->db->dbprefix;
 		
+		$this->db->empty_table('bf_user_info');
 		$this->db->empty_table('bf_university');
 		$this->db->empty_table('bf_industry');
 		$this->db->empty_table('bf_country');
