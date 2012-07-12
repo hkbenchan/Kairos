@@ -498,7 +498,7 @@ class reports extends Admin_Controller {
 			
 			if (count($result->row_array())>0)
 			{
-				$this->load->model('kiarosmembercv_model',null,TRUE);
+				$this->load->model('kairosmembercv_model',null,TRUE);
 				$CV_uploaded = $this->kairosmembercv_model->find($detailID);
 				if ($CV_uploaded->num_rows()>0)
 				{

@@ -100,7 +100,7 @@ class content extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
 		
-		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows()>0)
+		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id()) != null)
 			Template::redirect(SITE_AREA . '/content/kairosmemberinfo/edit/' . $this->auth->user_id());
 		if ($this->input->post('submit'))
 		{
