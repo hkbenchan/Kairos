@@ -26,7 +26,7 @@ class Kairosmembercv_model extends BF_Model {
 			return 0;
 		}
 		
-		$this->db->delete('bg_CV', array('uid' => $uid));
+		$this->db->delete('CV', array('uid' => $uid));
 		return $this->db->affected_rows();
 	}
 	

@@ -134,10 +134,11 @@ class Migration_Install_user_info extends Migration {
 		/* CV table */
 		$queries[] = "CREATE TABLE `bf_CV` (
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-		`name` VARCHAR(30) NOT NULL,
+		`name` VARCHAR(100) NOT NULL,
 		`size` INT(11) NOT NULL,
 		`type` VARCHAR(30) NOT NULL,
 		`ext` VARCHAR(10) NOT NULL,
+		`key` VARCHAR(160) NOT NULL,
 		`file` MEDIUMBLOB NOT NULL,		
 		FOREIGN KEY (`uid`) REFERENCES bf_users (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 		)";

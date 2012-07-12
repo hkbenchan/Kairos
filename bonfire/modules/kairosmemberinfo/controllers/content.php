@@ -64,10 +64,20 @@ class content extends Admin_Controller {
 		
 		$records = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
 		
-
+		Template::set_view('reports/detail');
 		//print_r($records->result()); die();
-		if ($records != null)
-			Template::set('records', $records->row_array());
+		if ($records != null) {
+			$this->load->model('kairosmembercv_model',null,true);
+			$records = $records->row_array();
+			if ($this->kairosmembercv_model->find($this->auth->user_id())->num_rows() == 0){
+				Template::set_message(lang('kairosmemberinfo_missing_part_two'),'attention');
+			}
+			else {
+				$records['kairosmemberinfo_CV'] = TRUE;
+			}
+			
+			Template::set('records', $records);
+		}
 		else {
 			Template::set('records', null);
 			Template::set_message(lang('kairosmemberinfo_missing_part_one'), 'attention');
@@ -98,7 +108,7 @@ class content extends Admin_Controller {
 				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_record'). ': ' . $insert_id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
 
 				Template::set_message(lang('kairosmemberinfo_create_success'), 'success');
-				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
+				Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create_cv');
 			}
 			else
 			{
@@ -366,6 +376,7 @@ class content extends Admin_Controller {
 		$upload_config['upload_path'] = './uploads/';
 		$upload_config['allowed_types'] = 'doc|docx|pdf';
 		$upload_config['max_size']	= '1024';
+		$upload_config['encrypt_name'] = TRUE;
 		
 		$this->load->library('upload', $upload_config);
 		
@@ -383,27 +394,28 @@ class content extends Admin_Controller {
 			// open the file
 			$fp = fopen($data['full_path'],'r');
 			$content = fread($fp, filesize($data['full_path']));
-			$content = addslashes($content);
 			fclose($fp);
-
-			if(!get_magic_quotes_gpc())
-			{
-			    $fileName = addslashes($data['file_name']);
-			} else {
-				$fileName = $data['file_name'];
-			}
-			;
-
+			//remove the temp file
+			unlink($data['full_path']);
+			$this->load->library('encrypt');
+			
+			$key = time();
+			$key1 = $this->encrypt->sha1($key);
+			$content = $this->encrypt->encode($content,$key);
+			
 			$insert_data = array(
 				'uid'	=> $this->auth->user_id(),
-				'name' => $fileName,
+				'name' => $data['file_name'],
 				'size' => $data['file_size'],
 				'type' => $data['file_type'],
 				'ext' => $data['file_ext'],
+				'key' => $key,
 				'file' => $content,
 			);
+			
 			$this->load->model('kairosmembercv_model',null,TRUE);
 			$result = $this->kairosmembercv_model->insert($insert_data);
+
 			if ($result == 0)
 			{
 				$error = lang('kairosmemberinfo_create_cv_failure');
@@ -412,8 +424,6 @@ class content extends Admin_Controller {
 			} else {
 				//log the activity
 				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_cv_record'). ': ' . $this->auth->user_id() . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-				//remove the temp file
-				unlink($data['full_path']);
 				Template::set_message(lang('kairosmemberinfo_create_cv_success'), 'success');
 				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
 			}

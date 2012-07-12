@@ -84,7 +84,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
             <?php echo form_label('Gender'. lang('bf_form_label_required'), 'kairosmemberinfo_gender', array('class' => "control-label") ); ?>
        <div class='controls'>
         <label class="radio">
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_gender', 'M', TRUE); ?> />
+            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_gender', 'M'); ?> />
             <label for="kairosmemberinfo_gender">M</label>
             <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_gender', 'F'); ?> />
             <label for="kairosmemberinfo_gender">F</label>
@@ -135,29 +135,19 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		
 		<!-- Own venture  -->
 
-		<script language="JavaScript" type="text/Javascript">
-			function showDetail()
-			{
-					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
-			}
-			function hideDetail()
-			{
-					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
-			}
-		</script>
-
 		<div class="control-group <?php echo form_error('kairosmemberinfo_ownVenture') ? 'error' : ''; ?>">
             <?php echo form_label('Do you have your own venture?'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
        <div class='controls'>
         <label class="radio">
-            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T',  TRUE); ?> />
+            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T'); ?> />
             <label for="kairosmemberinfo_ownVenture">T</label>
-            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F') ; ?> />
+            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F') ; ?> />
             <label for="kairosmemberinfo_ownVenture">F</label>
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_ownVenture'); ?></span>
             </label>
         </div>
 		</div>
+		
 		<div id="kairosmemberinfo_ventureFollowUp" style="display:none">
 
 		<!-- Industry ID -->

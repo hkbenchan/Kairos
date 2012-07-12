@@ -13,12 +13,18 @@ if( isset($kairosmembercv) ) {
 $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 ?>
 <div class="admin-box">
-    <h3>KairosMemberInfo</h3>
+    <h3>Your CV (support: doc/docx/pdf)</h3>
 <?php echo form_open_multipart($this->uri->uri_string() . '_upload', 'class="form-horizontal"'); ?>
     <fieldset>
-	
-		<input type="file" name="userfile" size="20" />
-
+			<div class="control-group">
+	            <label class="control-label">
+					<p>CV:</p>
+				</label>
+	            <div class='controls'>
+					<input type="file" name="userfile" size="50" />
+				</div>
+			</div>
+			
         <div class="form-actions">
             <br/>
             <input type="submit" name="submit" class="btn btn-primary" value="Upload CV" />
@@ -26,7 +32,8 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
             
         </div>
     </fieldset>
-    <?php echo form_close(); ?>
-
-
+<?php echo form_close(); ?>
+	<div class="">
+		<p>* Your file will be encrypted and secured in our database.</p>
+	</div>
 </div>
