@@ -15,7 +15,7 @@ class content extends Admin_Controller {
 		$this->load->helper('security');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
-			Assets::add_js('jquery-ui-1.8.13.min.js');
+			//Assets::add_js('jquery-ui-1.8.13.min.js');
 		Template::set_block('sub_nav', 'content/_sub_nav');
 	}
 
@@ -99,7 +99,9 @@ class content extends Admin_Controller {
 	public function create()
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
-
+		
+		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows()>0)
+			Template::redirect(SITE_AREA . '/content/kairosmemberinfo/edit/' . $this->auth->user_id());
 		if ($this->input->post('submit'))
 		{
 			if ($insert_id = $this->save_kairosmemberinfo())
@@ -128,20 +130,21 @@ class content extends Admin_Controller {
 	private function getAndPassOptions()
 	{
 		/* get the list of Country */
-		$this->db->order_by('name');
-		$query = $this->db->get('bf_country');
+		$query = $this->kairosmemberinfo_model->listCountry();
 		Template::set('country_code',$query->result());
 		
 		
 		/* get the list of University */
-		$this->db->order_by('name');
-		$query = $this->db->get('bf_university');
+		$query = $this->kairosmemberinfo_model->listUniversity();
 		Template::set('university_code', $query->result());
 		
 		/* get the list of Industry */
-		$this->db->order_by('name');
-		$query = $this->db->get('bf_industry');
+		$query = $this->kairosmemberinfo_model->listIndustry();
 		Template::set('industry_code', $query->result());
+		
+		/* get the list of preference */
+		$query = $this->kairosmemberinfo_model->listPreference();
+		Template::set('preference_code', $query->result());
 	}
 
 
@@ -182,35 +185,39 @@ class content extends Admin_Controller {
 				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
 
 				Template::set_message(lang('kairosmemberinfo_edit_success'), 'success');
-				Template::redirect(SITE_AREA .'/content/kairosmemberinfo');
+				Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create_cv');
 			}
 			else
 			{
 				Template::set_message(lang('kairosmemberinfo_edit_failure') . $this->kairosmemberinfo_model->error, 'error');
 			}
 		}
+		else {
+			//$uid = $this->auth->user_id();
+			$result = $this->kairosmemberinfo_model->find('user', $id)->row_array();;
 		
-		//$uid = $this->auth->user_id();
-		$result = $this->kairosmemberinfo_model->find('user', $id)->row_array();;
+			// break down the dob
+			$dob = explode('-',$result['kairosmemberinfo_dob']);
 		
-		// break down the dob
-		$dob = explode('-',$result['kairosmemberinfo_dob']);
+			$result['kairosmemberinfo_dob_y'] = $dob[0];
+			$result['kairosmemberinfo_dob_m'] = $dob[1];
+			$result['kairosmemberinfo_dob_d'] = $dob[2];
 		
-		$result['kairosmemberinfo_dob_y'] = $dob[0];
-		$result['kairosmemberinfo_dob_m'] = $dob[1];
-		$result['kairosmemberinfo_dob_d'] = $dob[2];
+			Template::set('kairosmemberinfo_skills', $result['kairosmemberinfo_skills']);
 		
-		Template::set('kairosmemberinfo_skills', $this->input->post('kairosmemberinfo_skills'));
-		
-		
+			if ($result['kairosmemberinfo_ownVenture'] == 'T')
+			{
+				Template::set('kairosmemberinfo_ventureDescr', $result['kairosmemberinfo_ventureDescr']);
+			}
+			Template::set('kairosmemberinfo', $result);
+		}
 		//print_r($result); die();
-		Template::set('kairosmemberinfo', $result);
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
 
 		Template::set('toolbar_title', lang('kairosmemberinfo_edit') . ' KairosMemberInfo');
 
 		$this->getAndPassOptions();
-
+		Template::set_view('content/create');
 		Template::render();
 	}
 

@@ -1,24 +1,17 @@
-$('#kairosmemberinfo_dob').datepicker({ dateFormat: 'yy-mm-dd'});
-
 /* Animation for the form */
 
-$('#kairosmemberinfo_ownVentureT').click(function(){
-	//console.log($(this).val());
-	if ($(this).val() =="T") {
-		$('#kairosmemberinfo_ventureFollowUp').show('slow');
-		$('#kairosmemberinfo_ownVentureT').prop('checked',true);
-		$('#kairosmemberinfo_ownVentureF').prop('checked',false);
-	};
-	return false;
-});
+$('input[name=kairosmemberinfo_ownVenture]').click(function(){
+	var a = $('#kairosmemberinfo_ventureFollowUp');
+	if ($(this).val() == 'T'){
+		a.show('slow');
+	} else {
+		a.hide('slow');
+	}
+})
 
-$('#kairosmemberinfo_ownVentureF').click(function(){
-	//console.log($(this).val());
-	if ($(this).val() =="F") {
-		$('#kairosmemberinfo_ventureFollowUp').hide('slow');
-		$('#kairosmemberinfo_ownVentureF').prop('checked',true);
-		$('#kairosmemberinfo_ownVentureT').prop('checked',false);
-	};
-	return false;
+/* for form filling */
+$(document).ready(function(){
+	if ($('#kairosmemberinfo_ownVentureT').prop('checked')) {
+		$('#kairosmemberinfo_ventureFollowUp').css('display','block');
+	}
 });
-
