@@ -1,4 +1,3 @@
-
 <?php if (validation_errors()) : ?>
 <div class="alert alert-block alert-error fade in ">
   <a class="close" data-dismiss="alert">&times;</a>
@@ -257,6 +256,28 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		</div>
 		</div>
 		
+		<!-- Preference -->
+		<?php
+		
+		
+		?>
+		<div class="control-group">
+			<div class='controls'>
+				<?php // preference code
+					foreach ($preference_code as $id => $row): ?>
+						<label class="checkbox" for="<?php echo "kairosmemberinfo_preference".$row['pid'];?>">
+						<?php $data = array(
+							'name' => 'kairosmemberinfo_preference',
+							'id' => 'kairosmemberinfo_preference'.$row['pid'],
+							'value' => $row['description'],
+							'checked' => set_checkbox('kairosmemberinfo_preference',$row['description']),
+						);
+							echo form_checkbox($data);
+						?>
+						</label>
+				<?php endforeach; ?>
+			</div>
+		</div>
 		<!-- Newsletter  -->
 		
 		
@@ -275,7 +296,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 
         <div class="form-actions">
             <br/>
-            <input type="submit" name="submit" class="btn btn-primary" value="Create KairosMemberInfo" />
+            <input type="submit" name="submit" class="btn btn-primary" value="Submit Application part 1" />
             or <?php echo anchor(SITE_AREA .'/content/kairosmemberinfo', lang('kairosmemberinfo_cancel'), 'class="btn btn-warning"'); ?>
             
         </div>
