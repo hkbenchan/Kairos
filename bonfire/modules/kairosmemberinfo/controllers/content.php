@@ -65,7 +65,6 @@ class content extends Admin_Controller {
 		$records = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
 		
 		Template::set_view('reports/detail');
-		//print_r($records->result()); die();
 		if ($records != null) {
 			$this->load->model('kairosmembercv_model',null,true);
 			$records = $records->row_array();
@@ -77,6 +76,8 @@ class content extends Admin_Controller {
 			}
 			
 			Template::set('records', $records);
+			$userPreference = $this->kairosmemberinfo_model->selectUserPreferenceName($this->auth->user_id())->result_array();
+			Template::set('preference_records',$userPreference);
 		}
 		else {
 			Template::set('records', null);
@@ -144,7 +145,7 @@ class content extends Admin_Controller {
 		
 		/* get the list of preference */
 		$query = $this->kairosmemberinfo_model->listPreference();
-		Template::set('preference_code', $query->result());
+		Template::set('preference_code', $query->result_array());
 	}
 
 
@@ -194,7 +195,7 @@ class content extends Admin_Controller {
 		}
 		else {
 			//$uid = $this->auth->user_id();
-			$result = $this->kairosmemberinfo_model->find('user', $id)->row_array();;
+			$result = $this->kairosmemberinfo_model->find('user', $id)->row_array($id);;
 		
 			// break down the dob
 			$dob = explode('-',$result['kairosmemberinfo_dob']);
@@ -210,6 +211,13 @@ class content extends Admin_Controller {
 				Template::set('kairosmemberinfo_ventureDescr', $result['kairosmemberinfo_ventureDescr']);
 			}
 			Template::set('kairosmemberinfo', $result);
+			
+			$rs = $this->kairosmemberinfo_model->selectUserPreference($id)->result_array();
+			$kairosmemberinfo_preference = array();
+			foreach($rs as $id => $row){
+				$kairosmemberinfo_preference[$row['pid']] = 'T';
+			}
+			Template::set('kairosmemberinfo_preference',$kairosmemberinfo_preference);
 		}
 		//print_r($result); die();
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
@@ -285,7 +293,6 @@ class content extends Admin_Controller {
 		if ($type == 'update') {
 			$_POST['id'] = $id;
 		}
-
 		
 		$this->form_validation->set_rules('kairosmemberinfo_firstname','First name','required|trim|xss_clean|alpha_numeric|max_length[32]');
 		$this->form_validation->set_rules('kairosmemberinfo_middlename','Middle Name','trim|xss_clean|alpha_numeric|max_length[32]');
@@ -299,7 +306,7 @@ class content extends Admin_Controller {
 		$this->form_validation->set_rules('kairosmemberinfo_ownVenture','Own Venture','required|max_length[1]');
 		$this->form_validation->set_rules('kairosmemberinfo_skills','Special Skills','xss_clean|max_length[100]');
 		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','xss_clean|trim');
-		$this->form_validation->set_rules('kairosmemberinfo_preference','','xss_clean|trim');
+		$this->form_validation->set_rules('kairosmemberinfo_yearOfStudy','Year of Study','required|xss_clean');
 		
 		Template::set('kairosmemberinfo_skills', $this->input->post('kairosmemberinfo_skills'));
 		
@@ -312,6 +319,23 @@ class content extends Admin_Controller {
 		
 		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','trim|xss_clean|max_length[1]');
 
+		$preference_explode = explode(';',xss_clean($this->input->post('kairosmemberinfo_preference_combine')));
+		$query = $this->kairosmemberinfo_model->listPreference()->result_array();
+		$preference_need_to_add = array();
+		$kairosmemberinfo_preference = array();
+		foreach ($preference_explode as $descr){
+			foreach ($query as $r_id => $row) {
+				if ($row['description'] == $descr) {
+					$preference_need_to_add[] = array(
+						'uid' => $id,
+						'pid' => $row['pid'],
+					);
+					$kairosmemberinfo_preference[$row['pid']] = 'T';
+				}
+			}
+		}
+		Template::set('kairosmemberinfo_preference',$kairosmemberinfo_preference);
+		
 		if ($this->form_validation->run() === FALSE)
 		{
 			return FALSE;
@@ -323,7 +347,6 @@ class content extends Admin_Controller {
 		}
 
 		// make sure we only pass in the fields we want
-		
 		$data = array();
 		$data['kairosmemberinfo_firstname'] = $this->input->post('kairosmemberinfo_firstname');
 		$data['kairosmemberinfo_middlename'] = $this->input->post('kairosmemberinfo_middlename');
@@ -347,18 +370,13 @@ class content extends Admin_Controller {
 			$data['kairosmemberinfo_ventureDescr'] = $this->input->post('kairosmemberinfo_ventureDescr');
 		}
 		
-		/*$query = $this->kairosmemberinfo_model->listPreference();
-		$preference = $query->result();
-		foreach ($preference as $id => $row){
-			$data[$row['description']] = $this->input->post('kairosmemberinfo_preference[]');
-		}*/
-		
-		echo '<pre>'.print_r($this->input->post('kairosmemberinfo_preference[]'),TRUE).'</pre>';
-		die();
+		if (count($preference_need_to_add) > 0) {
+			$this->kairosmemberinfo_model->updateUserPreference($id,$preference_need_to_add);
+		}
 		
 		if ($type == 'insert')
 		{
-			$id = $this->kairosmemberinfo_model->insert($this->auth->user_id(),$data);
+			$id = $this->kairosmemberinfo_model->insert($id,$data);
 
 			if (is_numeric($id))
 			{

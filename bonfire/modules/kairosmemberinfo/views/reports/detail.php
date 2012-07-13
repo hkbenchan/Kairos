@@ -75,6 +75,20 @@
 					<td>Receive future Newsletter (T/F)</td>
 					<td><?php echo $records['kairosmemberinfo_newsletterUpdate']==1 ? 'T':'F'; ?></td>
 				</tr>
+				<?php if (isset($preference_records)): ?>
+				<tr>
+					<td>Preference:</td>
+					<td>
+						<?php if (count($preference_records)) :?>
+							<?php foreach ($preference_records as $r_id => $rows){
+								echo $rows['description'] . '<br>';}
+							?>
+						<?php else: ?>
+							No preference is selected.
+						<?php endif; ?>
+					</td>
+				</tr>
+				<?php endif; ?>				
 				<?php if (isset($records['kairosmemberinfo_CV'])): ?>
 				<tr>
 					<td>CV download:</td>
@@ -83,7 +97,7 @@
 				<?php endif; ?>
 			<?php else: ?>
 				<tr>
-					<td colspan="11">You have entered an invalid user id. Please try again.</td>
+					<td colspan="2">You have entered an invalid user id. Please try again.</td>
 				</tr>
 			<?php endif; ?>
 			</tbody>

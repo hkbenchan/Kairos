@@ -442,5 +442,31 @@ class Kairosmemberinfo_model extends BF_Model {
 		$this->db->order_by('description');
 		return $this->db->get('bf_preference');
 	}
+	
+	public function selectUserPreference($uid){
+		$this->db->where('uid',$uid);
+		return $this->db->get('bf_user_preference');
+	}
+	
+	public function selectUserPreferenceName($uid){
+		$this->db->where('uid',$uid)
+				->join('bf_preference','bf_preference.pid = bf_user_preference.pid')
+				->order_by('bf_preference.description');
+		return $this->db->get('bf_user_preference');
+	}
+	
+	public function updateUserPreference($uid,$data){
+		$this->deleteUserPreference($uid);
+		$this->db->insert_batch('bf_user_preference',$data);
+		return $this->db->insert_id();
+	}
+	
+	public function deleteUserPreference($uid){
+		$query = $this->selectUserPreference($uid);
+		if ($query->num_rows()>0) {
+			$this->db->delete('bf_user_preference', array('uid' => $uid));
+		}
+		return $this->db->affected_rows();
+	}
 }
 

@@ -257,25 +257,25 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		</div>
 		
 		<!-- Preference -->
-		<?php
-		
-		
-		?>
 		<div class="control-group">
+			<?php echo form_label('Preference in future events', '', array('class'=> "control-label")); ?>
 			<div class='controls'>
 				<?php // preference code
 					foreach ($preference_code as $id => $row): ?>
 						<label class="checkbox" for="<?php echo "kairosmemberinfo_preference".$row['pid'];?>">
-						<?php $data = array(
+						<?php
+						 	$checked = (isset($kairosmemberinfo_preference[$row['pid']]) && ($kairosmemberinfo_preference[$row['pid']] == 'T'))?'checked':false;
+							$data = array(
 							'name' => 'kairosmemberinfo_preference',
 							'id' => 'kairosmemberinfo_preference'.$row['pid'],
 							'value' => $row['description'],
-							'checked' => set_checkbox('kairosmemberinfo_preference',$row['description']),
+							'checked' => $checked,
 						);
-							echo form_checkbox($data);
+							echo form_checkbox($data); echo $row['description'] . '<br>';
 						?>
 						</label>
 				<?php endforeach; ?>
+				<input type="hidden" id="kairosmemberinfo_preference_combine" name="kairosmemberinfo_preference_combine" value="">
 			</div>
 		</div>
 		<!-- Newsletter  -->
