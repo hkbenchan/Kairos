@@ -1,4 +1,3 @@
-
 <?php if (validation_errors()) : ?>
 <div class="alert alert-block alert-error fade in ">
   <a class="close" data-dismiss="alert">&times;</a>
@@ -83,13 +82,33 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		<div class="control-group <?php echo form_error('kairosmemberinfo_gender') ? 'error' : ''; ?>">
             <?php echo form_label('Gender'. lang('bf_form_label_required'), 'kairosmemberinfo_gender', array('class' => "control-label") ); ?>
        <div class='controls'>
-        <label class="radio">
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="M" <?php echo set_radio('kairosmemberinfo_gender', 'M', TRUE); ?> />
-            <label for="kairosmemberinfo_gender">M</label>
-            <input id="kairosmemberinfo_gender" name="kairosmemberinfo_gender" type="radio" class="" value="F" <?php echo set_radio('kairosmemberinfo_gender', 'F'); ?> />
-            <label for="kairosmemberinfo_gender">F</label>
+			<?php
+				$radio_gender = null;
+				if (isset($kairosmemberinfo['kairosmemberinfo_gender'])) {
+					if ($kairosmemberinfo['kairosmemberinfo_gender']=='M'){
+						$radio_gender = 'M';
+					}
+					elseif ($kairosmemberinfo['kairosmemberinfo_gender']=='F'){
+						$radio_gender = 'F';
+					}
+				}
+			
+			?>
+            <input id="kairosmemberinfo_gender_M" name="kairosmemberinfo_gender" type="radio" value="M"
+				<?php
+				 	if ($radio_gender == 'M')
+						echo set_radio('kairosmemberinfo_gender', 'M', TRUE);
+					else
+					 	echo set_radio('kairosmemberinfo_gender', 'M');
+				?> />M<br>
+            <input id="kairosmemberinfo_gender_F" name="kairosmemberinfo_gender" type="radio" value="F"
+				<?php
+				 	if ($radio_gender == 'F')
+						echo set_radio('kairosmemberinfo_gender', 'F', TRUE);
+					else
+						echo set_radio('kairosmemberinfo_gender', 'F');
+				?> />F
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_gender'); ?></span>
-            </label>
         </div>
 		</div>
 		
@@ -135,29 +154,40 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		
 		<!-- Own venture  -->
 
-		<script language="JavaScript" type="text/Javascript">
-			function showDetail()
-			{
-					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
-			}
-			function hideDetail()
-			{
-					document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
-			}
-		</script>
-
 		<div class="control-group <?php echo form_error('kairosmemberinfo_ownVenture') ? 'error' : ''; ?>">
             <?php echo form_label('Do you have your own venture?'. lang('bf_form_label_required'), 'kairosmemberinfo_ownVenture', array('class' => "control-label") ); ?>
        <div class='controls'>
-        <label class="radio">
-            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" class="" value="T" onclick="showDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'T',  TRUE); ?> />
-            <label for="kairosmemberinfo_ownVenture">T</label>
-            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" class="" value="F" onclick="hideDetail();" <?php echo set_radio('kairosmemberinfo_ownVenture', 'F') ; ?> />
-            <label for="kairosmemberinfo_ownVenture">F</label>
+
+		<?php $radio_venture = null;
+			if (isset($kairosmemberinfo['kairosmemberinfo_ownVenture'])){
+				if ($kairosmemberinfo['kairosmemberinfo_ownVenture'] == 'T'){
+					$radio_venture = 'T';
+				} elseif ($kairosmemberinfo['kairosmemberinfo_ownVenture'] == 'F'){
+					$radio_venture = 'F';
+				}
+			}
+		?>
+		
+            <input id="kairosmemberinfo_ownVentureT" name="kairosmemberinfo_ownVenture" type="radio" value="T"
+			<?php
+			 	if ($radio_venture == 'T')
+					echo set_radio('kairosmemberinfo_ownVenture', 'T', TRUE);
+				else
+				 	echo set_radio('kairosmemberinfo_ownVenture', 'T');
+			?> />
+            T<br>
+            <input id="kairosmemberinfo_ownVentureF" name="kairosmemberinfo_ownVenture" type="radio" value="F"
+			<?php
+			 	if ($radio_venture == 'F')
+					echo set_radio('kairosmemberinfo_ownVenture', 'F', TRUE);
+				else
+				 	echo set_radio('kairosmemberinfo_ownVenture', 'F');
+			?> />
+            F
             <span class="help-inline"><?php echo form_error('kairosmemberinfo_ownVenture'); ?></span>
-            </label>
         </div>
 		</div>
+		
 		<div id="kairosmemberinfo_ventureFollowUp" style="display:none">
 
 		<!-- Industry ID -->
@@ -202,30 +232,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 			<span class="help-inline"><?php echo form_error('kairosmemberinfo_ventureDescr'); ?></span>
 		</div>
 		</div>
-		
-		<script language="JavaScript" type="text/Javascript">
-		function formShow(){
-			if (!(document.getElementById('kairosmemberinfo_ownVentureF').checked || document.getElementById('kairosmemberinfo_ownVentureT').checked))
-			{
-				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
-				return 1;
-			}
-			else if (document.getElementById('kairosmemberinfo_ownVentureF').checked)
-			{
-				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'none';
-				return 2;
-			}
-			else if (document.getElementById('kairosmemberinfo_ownVentureT').checked)
-			{
-				document.getElementById('kairosmemberinfo_ventureFollowUp').style.display = 'block';
-				return 3;
-			}
-			else return 4;
-			}
-		formShow();
-		</script>
-		
-		
+
 		</div>
 		
 		
@@ -249,6 +256,28 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 		</div>
 		</div>
 		
+		<!-- Preference -->
+		<div class="control-group">
+			<?php echo form_label('Preference in future events', '', array('class'=> "control-label")); ?>
+			<div class='controls'>
+				<?php // preference code
+					foreach ($preference_code as $id => $row): ?>
+						<label class="checkbox" for="<?php echo "kairosmemberinfo_preference".$row['pid'];?>">
+						<?php
+						 	$checked = (isset($kairosmemberinfo_preference[$row['pid']]) && ($kairosmemberinfo_preference[$row['pid']] == 'T'))?'checked':false;
+							$data = array(
+							'name' => 'kairosmemberinfo_preference',
+							'id' => 'kairosmemberinfo_preference'.$row['pid'],
+							'value' => $row['description'],
+							'checked' => $checked,
+						);
+							echo form_checkbox($data); echo $row['description'] . '<br>';
+						?>
+						</label>
+				<?php endforeach; ?>
+				<input type="hidden" id="kairosmemberinfo_preference_combine" name="kairosmemberinfo_preference_combine" value="">
+			</div>
+		</div>
 		<!-- Newsletter  -->
 		
 		
@@ -267,7 +296,7 @@ $id = isset($kairosmemberinfo['id']) ? $kairosmemberinfo['id'] : '';
 
         <div class="form-actions">
             <br/>
-            <input type="submit" name="submit" class="btn btn-primary" value="Create KairosMemberInfo" />
+            <input type="submit" name="submit" class="btn btn-primary" value="Submit Application part 1" />
             or <?php echo anchor(SITE_AREA .'/content/kairosmemberinfo', lang('kairosmemberinfo_cancel'), 'class="btn btn-warning"'); ?>
             
         </div>

@@ -191,14 +191,17 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 		$this->db->where('uid',$uid);
 		$this->db->delete('bf_user_info');
-		return $this->db->affected_rows() == 1;
+		
+		$this->deleteUserPreference($uid);
+		
+		return $this->db->affected_rows()>0;
 	}
 	
 	public function authroizeDelete($entry_id, $uid)
 	{
 		$this->db->where('entry_id',$entry_id);
 		$this->db->where('uid',$uid);
-		$query = $this->db->select('bf_user_info');
+		$query = $this->db->get('bf_user_info');
 		if ($query->num_rows() >0)
 		{
 			return TRUE;
@@ -421,6 +424,52 @@ class Kairosmemberinfo_model extends BF_Model {
 		$query = $this->db->get();
 		
 		return $query;
+	}
+	
+	public function listCountry(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_country');
+	}
+	
+	public function listUniversity(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_university');
+	}
+	
+	public function listIndustry(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_industry');
+	}
+	
+	public function listPreference(){
+		$this->db->order_by('description');
+		return $this->db->get('bf_preference');
+	}
+	
+	public function selectUserPreference($uid){
+		$this->db->where('uid',$uid);
+		return $this->db->get('bf_user_preference');
+	}
+	
+	public function selectUserPreferenceName($uid){
+		$this->db->where('uid',$uid)
+				->join('bf_preference','bf_preference.pid = bf_user_preference.pid')
+				->order_by('bf_preference.description');
+		return $this->db->get('bf_user_preference');
+	}
+	
+	public function updateUserPreference($uid,$data){
+		$this->deleteUserPreference($uid);
+		$this->db->insert_batch('bf_user_preference',$data);
+		return $this->db->insert_id();
+	}
+	
+	public function deleteUserPreference($uid){
+		$query = $this->selectUserPreference($uid);
+		if ($query->num_rows()>0) {
+			$this->db->delete('bf_user_preference', array('uid' => $uid));
+		}
+		return $this->db->affected_rows();
 	}
 }
 
