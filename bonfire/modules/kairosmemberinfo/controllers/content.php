@@ -402,8 +402,8 @@ class content extends Admin_Controller {
 	
 	public function create_cv() {
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
-		
-		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows() <= 0){
+		$result = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
+		if ($result == null || $result->num_rows() <= 0){
 			Template::set_message('You need to fill information before uploading your CV', 'error');
 			Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create');
 		}
@@ -441,19 +441,19 @@ class content extends Admin_Controller {
 			fclose($fp);
 			//remove the temp file
 			unlink($data['full_path']);
-			$this->load->library('encrypt');
+			/*$this->load->library('encrypt');
 			
 			$key = time();
 			$key1 = $this->encrypt->sha1($key);
 			$content = $this->encrypt->encode($content,$key);
-			
+			*/
 			$insert_data = array(
 				'uid'	=> $this->auth->user_id(),
 				'name' => $data['file_name'],
 				'size' => $data['file_size'],
 				'type' => $data['file_type'],
 				'ext' => $data['file_ext'],
-				'key' => $key,
+				'key' => '',
 				'file' => $content,
 			);
 			

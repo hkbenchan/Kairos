@@ -455,14 +455,8 @@ class reports extends Admin_Controller {
 		};
 		
 		$data = $query->row_array();
-		//echo '<pre>'.print_r($data,TRUE).'</pre>'; die();
-		
-		// decode the file base on the key
-		$this->load->library('encrypt');
-		$key = $data['key'];
-		$key = $this->encrypt->sha1($key);
+
 		$file = $data['file'];
-		$file = $this->encrypt->decode($file,$key);
 		$name = 'CV_' . $request_ID . $data['ext'];
 		// force download and die
 		
@@ -485,6 +479,8 @@ class reports extends Admin_Controller {
 		$detailID = xss_clean($this->uri->segment(5));
 		$csv = xss_clean($this->uri->segment(6));
 		
+		//echo $detailID;die();
+		
 		if (!empty($detailID))
 		{
 			//get that user info
@@ -495,17 +491,18 @@ class reports extends Admin_Controller {
 				csvRequest($result, $name);
 				die();
 			}
-			
-			if (count($result->row_array())>0)
+
+			if ($result->num_rows()>0)
 			{
 				$this->load->model('kairosmembercv_model',null,TRUE);
 				$CV_uploaded = $this->kairosmembercv_model->find($detailID);
+				$result_row = $result->first_row('array');
 				if ($CV_uploaded->num_rows()>0)
 				{
-					$result = $result->row_array();
-					$result['kairosmemberinfo_CV'] = TRUE;
+					$result_row['kairosmemberinfo_CV'] = TRUE;
 				}
-				Template::set('records', $result);
+				
+				Template::set('records', $result_row);
 				$userPreference = $this->kairosmemberinfo_model->selectUserPreferenceName($detailID)->result_array();
 				Template::set('preference_records',$userPreference);
 			}
