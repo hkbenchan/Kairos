@@ -298,6 +298,8 @@ class content extends Admin_Controller {
 		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]|numeric');
 		$this->form_validation->set_rules('kairosmemberinfo_ownVenture','Own Venture','required|max_length[1]');
 		$this->form_validation->set_rules('kairosmemberinfo_skills','Special Skills','xss_clean|max_length[100]');
+		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','xss_clean|trim');
+		$this->form_validation->set_rules('kairosmemberinfo_preference','','xss_clean|trim');
 		
 		Template::set('kairosmemberinfo_skills', $this->input->post('kairosmemberinfo_skills'));
 		
@@ -344,6 +346,15 @@ class content extends Admin_Controller {
 			$data['kairosmemberinfo_IndustryID'] = $this->input->post('kairosmemberinfo_IndustryID');
 			$data['kairosmemberinfo_ventureDescr'] = $this->input->post('kairosmemberinfo_ventureDescr');
 		}
+		
+		/*$query = $this->kairosmemberinfo_model->listPreference();
+		$preference = $query->result();
+		foreach ($preference as $id => $row){
+			$data[$row['description']] = $this->input->post('kairosmemberinfo_preference[]');
+		}*/
+		
+		echo '<pre>'.print_r($this->input->post('kairosmemberinfo_preference[]'),TRUE).'</pre>';
+		die();
 		
 		if ($type == 'insert')
 		{
