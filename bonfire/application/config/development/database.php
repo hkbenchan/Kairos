@@ -57,6 +57,22 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = TRUE;
 
+$db['dev']['hostname'] = 'localhost';
+$db['dev']['username'] = 'kairosso_mbAdmin';
+$db['dev']['password'] = 's5kairos';
+$db['dev']['database'] = 'kairosso_membership_info';
+$db['dev']['dbdriver'] = 'mysql';
+$db['dev']['dbprefix'] = 'bf_';
+$db['dev']['pconnect'] = TRUE;
+$db['dev']['db_debug'] = TRUE;
+$db['dev']['cache_on'] = FALSE;
+$db['dev']['cachedir'] = '';
+$db['dev']['char_set'] = 'utf8';
+$db['dev']['dbcollat'] = 'utf8_general_ci';
+$db['dev']['swap_pre'] = '';
+$db['dev']['autoinit'] = TRUE;
+$db['dev']['stricton'] = TRUE;
+
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

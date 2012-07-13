@@ -1,3 +1,5 @@
+<!-- Setting -->
+
 <div class="admin-box">
 	<h3>KairosMemberInfo</h3>
 	<?php echo form_open($this->uri->uri_string()); ?>

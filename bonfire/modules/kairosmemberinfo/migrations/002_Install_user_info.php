@@ -20,7 +20,7 @@ class Migration_Install_user_info extends Migration {
 				'constraint' => 20,
 				'unsigned' => TRUE
 			),
-			'kairosmemberinfo_surname' => array(
+			'kairosmemberinfo_firstname' => array(
 				'type' => 'VARCHAR',
 				'constraint' => 32,
 				
@@ -72,7 +72,7 @@ class Migration_Install_user_info extends Migration {
 			
 			'kairosmemberinfo_skills' => array(
 				'type' => 'VARCHAR',
-				'constraint' => 50
+				'constraint' => 100
 			),
 			
 			'kairosmemberinfo_newsletterUpdate' => array(
@@ -86,16 +86,16 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->create_table('user_info');
 		
 		/* Link bf_user_info.uid with bf_users.id */
-		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES  `KairosDatabase`.`bf_users` 
+		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`uid` ) REFERENCES `bf_users` 
 		(`id`) ON DELETE CASCADE";
 		
 		/* Link bf_user_info.nationalityID with bf_country.nid */
 		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_nationalityID` ) REFERENCES  
-		`KairosDatabase`.`bf_country` (`nid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		`bf_country` (`nid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
 		
 		/* Link bf_user_info.UniversityID with bf_university.uid */
 		$queries[] = "ALTER TABLE `bf_user_info` ADD FOREIGN KEY (`kairosmemberinfo_UniversityID` ) REFERENCES 
-		`KairosDatabase`.`bf_university` (`uid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
+		`bf_university` (`uid`) ON DELETE RESTRICT ON UPDATE NO ACTION";
 		
 		/* execute all queries */
 		foreach ($queries as $query) {
@@ -121,7 +121,8 @@ class Migration_Install_user_info extends Migration {
 		$this->dbforge->drop_table('industry');
 		$this->dbforge->drop_table('CV');
 		$this->dbforge->drop_table('university');
-
+		$this->dbforge->drop_table('user_preference');
+		$this->dbforge->drop_table('preference');
 	}
 
 	//--------------------------------------------------------------------
@@ -131,32 +132,37 @@ class Migration_Install_user_info extends Migration {
 		$prefix = $this->db->dbprefix;
 		
 		/* CV table */
-		$queries[] = "CREATE TABLE  `KairosDatabase`.`bf_CV` (
+		$queries[] = "CREATE TABLE `bf_CV` (
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-		`file` MEDIUMBLOB,
+		`name` VARCHAR(100) NOT NULL,
+		`size` INT(11) NOT NULL,
+		`type` VARCHAR(30) NOT NULL,
+		`ext` VARCHAR(10) NOT NULL,
+		`key` VARCHAR(160) NOT NULL,
+		`file` MEDIUMBLOB NOT NULL,		
 		FOREIGN KEY (`uid`) REFERENCES bf_users (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-		) ENGINE = INNODB;";
+		)";
 		
 		/* University table */
-		$queries[] = "CREATE TABLE  `KairosDatabase`.`bf_university` (
+		$queries[] = "CREATE TABLE  `bf_university` (
 		`uid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 100 ) NOT NULL
-		) ENGINE = INNODB;";
+		)";
 		
 		/* Country table */
-		$queries[] = "CREATE TABLE  `KairosDatabase`.`bf_country` (
+		$queries[] = "CREATE TABLE  `bf_country` (
 		`nid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 50 ) NOT NULL
-		) ENGINE = INNODB;";
+		)";
 		
 		/* Industry table */
-		$queries[] = "CREATE TABLE  `KairosDatabase`.`bf_industry` (
+		$queries[] = "CREATE TABLE  `bf_industry` (
 		`iid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`name` VARCHAR( 100 ) NOT NULL UNIQUE
-		) ENGINE = INNODB;";
+		)";
 		
 		/* Venture table */
-		$queries[] = "CREATE TABLE  `KairosDatabase`.`bf_venture` (
+		$queries[] = "CREATE TABLE  `bf_venture` (
 		`vid` INT( 8 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 		`uid` BIGINT( 20 ) UNSIGNED NOT NULL,
 		`IndustryID` INT( 8 ) UNSIGNED NOT NULL,
@@ -164,9 +170,22 @@ class Migration_Install_user_info extends Migration {
 		`descr` TEXT NOT NULL,
 		FOREIGN KEY (`uid`) REFERENCES bf_users(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 		FOREIGN KEY (`IndustryID`) REFERENCES bf_industry(`iid`) ON DELETE RESTRICT ON UPDATE NO ACTION
-		) ENGINE = INNODB;";
+		)";
 		
+		/* Preference table */
+		$queries[] = "CREATE TABLE `bf_preference` (
+		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		`description` VARCHAR( 100 ) NOT NULL
+		)";
 		
+		/* User Preference table */
+		$queries[] = "CREATE TABLE `bf_user_preference` (
+		`pid` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`uid` BIGINT( 20 ) UNSIGNED NOT NULL,
+		PRIMARY KEY (`pid`,`uid`),
+		FOREIGN KEY(`pid`) REFERENCES bf_preference(`pid`),
+		FOREIGN KEY(`uid`) REFERENCES bf_users(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		)";
 		
 		foreach ($queries as $query) {
 			$result = $this->db->query($query);

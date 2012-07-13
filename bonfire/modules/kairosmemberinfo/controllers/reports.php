@@ -4,6 +4,14 @@ class reports extends Admin_Controller {
 
 	//--------------------------------------------------------------------
 
+	protected $pagination_config = array(
+		
+		'per_page' => 20, 
+		'num_links' => 5
+	);
+
+
+
 
 	public function __construct()
 	{
@@ -12,6 +20,9 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		$this->load->model('kairosmemberinfo_model', null, true);
 		$this->lang->load('kairosmemberinfo');
+		$this->load->helper('security');
+		$this->load->helper('exporter');
+		$this->load->library('info_display');
 		
 			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
 			Assets::add_js('jquery-ui-1.8.13.min.js');
@@ -29,41 +40,9 @@ class reports extends Admin_Controller {
 	*/
 	public function index()
 	{
-
-		// Deleting anything?
-		if ($action = $this->input->post('delete'))
-		{
-			if ($action == 'Delete')
-			{
-				$checked = $this->input->post('checked');
-
-				if (is_array($checked) && count($checked))
-				{
-					$result = FALSE;
-					foreach ($checked as $pid)
-					{
-						$result = $this->kairosmemberinfo_model->delete($pid);
-					}
-
-					if ($result)
-					{
-						Template::set_message(count($checked) .' '. lang('kairosmemberinfo_delete_success'), 'success');
-					}
-					else
-					{
-						Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
-					}
-				}
-				else
-				{
-					Template::set_message(lang('kairosmemberinfo_delete_error') . $this->kairosmemberinfo_model->error, 'error');
-				}
-			}
-		}
-
-		$records = $this->kairosmemberinfo_model->find_all();
-
-		Template::set('records', $records);
+		$reportOptions = $this->kairosmemberinfo_model->getReportOptions();
+		
+		Template::set('records', $reportOptions);
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
 	}
@@ -80,26 +59,9 @@ class reports extends Admin_Controller {
 	public function create()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Create');
-
-		if ($this->input->post('submit'))
-		{
-			if ($insert_id = $this->save_kairosmemberinfo())
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_create_record').': ' . $insert_id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_create_success'), 'success');
-				Template::redirect(SITE_AREA .'/reports/kairosmemberinfo');
-			}
-			else
-			{
-				Template::set_message(lang('kairosmemberinfo_create_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
-
-		Template::set('toolbar_title', lang('kairosmemberinfo_create') . ' KairosMemberInfo');
-		Template::render();
+		
+		Template::set_message('You cannot create anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
 
 	//--------------------------------------------------------------------
@@ -114,35 +76,9 @@ class reports extends Admin_Controller {
 	public function edit()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Edit');
-
-		$id = $this->uri->segment(5);
-
-		if (empty($id))
-		{
-			Template::set_message(lang('kairosmemberinfo_invalid_id'), 'error');
-			redirect(SITE_AREA .'/reports/kairosmemberinfo');
-		}
-
-		if ($this->input->post('submit'))
-		{
-			if ($this->save_kairosmemberinfo('update', $id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_edit_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_edit_success'), 'success');
-			}
-			else
-			{
-				Template::set_message(lang('kairosmemberinfo_edit_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-
-		Template::set('kairosmemberinfo', $this->kairosmemberinfo_model->find($id));
-		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
-
-		Template::set('toolbar_title', lang('kairosmemberinfo_edit') . ' KairosMemberInfo');
-		Template::render();
+		
+		Template::set_message('You cannot edit anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
 
 	//--------------------------------------------------------------------
@@ -158,105 +94,426 @@ class reports extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.Delete');
 
-		$id = $this->uri->segment(5);
-
-		if (!empty($id))
-		{
-
-			if ($this->kairosmemberinfo_model->delete($id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('kairosmemberinfo_act_delete_record').': ' . $id . ' : ' . $this->input->ip_address(), 'kairosmemberinfo');
-
-				Template::set_message(lang('kairosmemberinfo_delete_success'), 'success');
-			} else
-			{
-				Template::set_message(lang('kairosmemberinfo_delete_failure') . $this->kairosmemberinfo_model->error, 'error');
-			}
-		}
-
-		redirect(SITE_AREA .'/reports/kairosmemberinfo');
+		Template::set_message('You cannot delete anything', 'error');
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo');
 	}
 
-	//--------------------------------------------------------------------
-
-
-	//--------------------------------------------------------------------
-	// !PRIVATE METHODS
-	//--------------------------------------------------------------------
 
 	/*
-		Method: save_kairosmemberinfo()
-
-		Does the actual validation and saving of form data.
-
-		Parameters:
-			$type	- Either "insert" or "update"
-			$id		- The ID of the record to update. Not needed for inserts.
-
-		Returns:
-			An INT id for successful inserts. If updating, returns TRUE on success.
-			Otherwise, returns FALSE.
+		Method: View
+		Display the summary of selected report type
 	*/
-	private function save_kairosmemberinfo($type='insert', $id=0)
+	public function view()
 	{
-		if ($type == 'update') {
-			$_POST['id'] = $id;
-		}
-
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
-		$this->form_validation->set_rules('kairosmemberinfo_surname','Surname','required|trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_middlename','Middle Name','trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_lastname','Last name','required|trim|xss_clean|alpha_numeric|max_length[32]');
-		$this->form_validation->set_rules('kairosmemberinfo_dob','Date Of Birth','required|trim|xss_clean|max_length[8]');
-		$this->form_validation->set_rules('kairosmemberinfo_nationality_id','Nationality','required|trim|xss_clean|max_length[10]');
-		$this->form_validation->set_rules('kairosmemberinfo_gender','Gender','required|max_length[1]');
-		$this->form_validation->set_rules('kairosmemberinfo_University','University','required|trim|xss_clean|max_length[255]');
-		$this->form_validation->set_rules('kairosmemberinfo_yearOfStudy','Year of Study','required|trim|xss_clean|max_length[6]');
-		$this->form_validation->set_rules('kairosmemberinfo_phoneNo','Contact Number','required|trim|xss_clean|max_length[14]');
-		$this->form_validation->set_rules('kairosmemberinfo_newsletterUpdate','Receive Future Updates and Newsletter','required|trim|xss_clean|max_length[1]');
-
-		if ($this->form_validation->run() === FALSE)
-		{
-			return FALSE;
-		}
-
-		// make sure we only pass in the fields we want
+		$reportID = xss_clean($this->uri->segment(5));
 		
-		$data = array();
-		$data['kairosmemberinfo_surname']        = $this->input->post('kairosmemberinfo_surname');
-		$data['kairosmemberinfo_middlename']        = $this->input->post('kairosmemberinfo_middlename');
-		$data['kairosmemberinfo_lastname']        = $this->input->post('kairosmemberinfo_lastname');
-		$data['kairosmemberinfo_dob']        = $this->input->post('kairosmemberinfo_dob') ? $this->input->post('kairosmemberinfo_dob') : '0000-00-00';
-		$data['kairosmemberinfo_nationality_id']        = $this->input->post('kairosmemberinfo_nationality_id');
-		$data['kairosmemberinfo_gender']        = $this->input->post('kairosmemberinfo_gender');
-		$data['kairosmemberinfo_University']        = $this->input->post('kairosmemberinfo_University');
-		$data['kairosmemberinfo_yearOfStudy']        = $this->input->post('kairosmemberinfo_yearOfStudy');
-		$data['kairosmemberinfo_phoneNo']        = $this->input->post('kairosmemberinfo_phoneNo');
-		$data['kairosmemberinfo_newsletterUpdate']        = $this->input->post('kairosmemberinfo_newsletterUpdate');
-
-		if ($type == 'insert')
+		if (!empty($reportID))
 		{
-			$id = $this->kairosmemberinfo_model->insert($data);
+			// get the report type
+			//echo $reportID;
+			$result = $this->kairosmemberinfo_model->getReportOptions($reportID);
+			//print_r($result);
+			
+			// check if the ID is valid
+			if (count($result)>0)
+			{
+				if ($reportID == 2)
+				{
+					Template::redirect(SITE_AREA .'/reports/kairosmemberinfo/viewGroupByUniversity');
+				}
+				elseif ($reportID == 4)
+				{
+					Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/viewVentureOwner');
+				}
+				elseif ($reportID == 5)
+				{
+					Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/viewGroupByIndustry');
+				}
+				elseif ($reportID == 7)
+				{
+					Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/viewAllUsers');
+				}
+			}
+			// get all the data required and prepare for pagination
+			
+			
+			// render the page
+			
+		}
+		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/');
+	}
+	
+	public function viewGroupByUniversity()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
 
-			if (is_numeric($id))
+		$query = $this->kairosmemberinfo_model->groupByUniversity();
+		
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_University.csv';
+			csvRequest($query, $name);
+			die();
+		}
+		
+		$this->load->library('pagination');
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByUniversity';
+		$this->pagination_config['total_rows'] = $query->num_rows();
+		$this->pagination->initialize($this->pagination_config); 
+		$query = $this->kairosmemberinfo_model->groupByUniversity($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		
+		$config_header = array (
+			'University Name' => 'name',
+			'Number of Members' => 'NumberOfMembers',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewUniversity/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		
+		Template::set('toolbar_title', 'View University');
+		Template::set_view('reports/query/queryResult');
+		Template::set('display_data',$sequencer);
+		Template::render();
+		//echo $this->pagination->create_links();
+	}
+	
+	public function viewUniversity()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		$uni_ID = xss_clean($this->uri->segment(5));
+		
+		if (!empty($uni_ID))
+		{
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
+			
+			$csv = xss_clean($this->uri->segment(7));
+
+			if (!empty($csv))
 			{
-				$return = $id;
-			} else
+				$name = 'export_University_' . $uni_ID . '.csv';
+				csvRequest($query, $name);
+				die();
+			}
+			
+			$this->load->library('pagination');
+			
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewUniversity';
+			$this->pagination_config['total_rows'] = $query->num_rows();
+			$this->pagination_config['uri_segment'] = 6;
+
+			$this->pagination->initialize($this->pagination_config);
+			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
+			//print_r($query);die();
+			
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+			);
+
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('universityID', $uni_ID);
+		}
+		Template::set('toolbar_title', 'View Members in this University');
+		Template::set_view('reports/query/queryResult');
+		Template::render();
+		
+	}
+	
+	public function viewVentureOwner()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$query = $this->kairosmemberinfo_model->allVentureOwner();
+		
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_venture.csv';
+			csvRequest($query, $name);
+			die();
+		}
+		
+		$this->load->library('pagination');
+		//$this->load->library('table');
+		
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewVentureOwner';
+		$this->pagination_config['total_rows'] = $query->num_rows();
+
+		$this->pagination->initialize($this->pagination_config); 
+		
+		$query = $this->kairosmemberinfo_model->allVentureOwner($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		//print_r($query); die();
+		
+		$config_header = array (
+			'Venture Name' => 'name',
+			'Venture Owner' => 'kairosmemberinfo_name',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+		Template::set('display_data',$sequencer);
+		
+		Template::set('toolbar_title', 'View Venture Owner');
+		Template::set_view('reports/query/queryResult');
+		Template::render();
+	}
+	
+	
+	public function viewGroupByIndustry()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$query = $this->kairosmemberinfo_model->groupByIndustry();
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_industry.csv';
+			csvRequest($query, $name);
+			die();
+		}
+		
+		$this->load->library('pagination');
+		//$this->load->library('table');
+		
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewGroupByIndustry';
+		$this->pagination_config['total_rows'] = $query->num_rows();
+
+		$this->pagination->initialize($this->pagination_config); 
+		
+		$query = $this->kairosmemberinfo_model->groupByIndustry($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		//print_r($query); die();
+		
+		$config_header = array (
+			'Industry Name' => 'IndustryName',
+			'Number of Members' => 'NumberOfMembers',
+		);
+
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/viewIndustry/',
+				'variable' => 'IndustryID',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		
+		Template::set('display_data',$sequencer);
+		
+		Template::set('toolbar_title', 'Group By Industry');
+		Template::set_view('reports/query/queryResult');
+		Template::render();
+		
+	}
+	
+	public function viewIndustry()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$industry_ID = xss_clean($this->uri->segment(5));
+		$csv = xss_clean($this->uri->segment(7));
+		
+		if (!empty($industry_ID))
+		{
+			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID);
+			
+			if (!empty($csv))
 			{
-				$return = FALSE;
+				$name = 'export_Industry_id_' . $industry_ID . '.csv';
+				csvRequest($query, $name);
+				die();
+			}
+			
+			
+			$this->load->library('pagination');
+
+			$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewIndustry';
+			$this->pagination_config['total_rows'] = $query->num_rows();
+			$this->pagination_config['uri_segment'] = 6;
+
+			$this->pagination->initialize($this->pagination_config);
+			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID,$this->pagination_config['per_page'], xss_clean($this->uri->segment(6)));
+			//print_r($query);die();
+			$config_header = array (
+				'User ID' => 'uid',
+				'Name' => 'kairosmemberinfo_name',
+				'Venture Name' => 'name',
+			);
+
+			$config_url = array (
+				'0' => array(
+					'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+					'variable' => 'uid',
+				),
+			);
+
+			$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+			
+			Template::set('display_data',$sequencer);
+			//Template::set('industryID', $industry_ID);
+		}
+		Template::set('toolbar_title', 'View Members in this Industry');
+		Template::set_view('reports/query/queryResult');
+		Template::render();
+
+	}
+	
+	
+	public function viewAllUsers()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$query = $this->kairosmemberinfo_model->getAllUsers();
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($csv))
+		{
+			$name = 'export_all_users.csv';
+			csvRequest($query, $name);
+			die();
+		}
+		
+		$this->load->library('pagination');
+		//$this->load->library('table');
+		
+		$this->pagination_config['base_url'] = SITE_AREA. '/reports/kairosmemberinfo/viewAllUsers';
+		$this->pagination_config['total_rows'] = $query->num_rows();
+
+		$this->pagination->initialize($this->pagination_config); 
+		
+		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		//print_r($query); die();
+		
+		$config_header = array (
+			'Name' => 'kairosmemberinfo_name',
+			'Date of Birth (YYYY-DD-MM)' => 'kairosmemberinfo_dob',
+			'Gender' => 'kairosmemberinfo_gender',
+			'Year of Study' => 'kairosmemberinfo_yearOfStudy',
+			'Phone Number' => 'kairosmemberinfo_phoneNo',
+			'Skills' => 'kairosmemberinfo_skills',
+			'University' => 'kairosmemberinfo_University',
+			'Country' => 'kairosmemberinfo_nationality',
+			'Own Venture(T/F)' => 'kairosmemberinfo_ownVenture',
+			'Newsletter Update' => 'kairosmemberinfo_newsletterUpdate',
+		);
+		
+		$config_url = array (
+			'0' => array(
+				'url' => SITE_AREA . '/reports/kairosmemberinfo/detail/',
+				'variable' => 'uid',
+			),
+		);
+
+		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
+		Template::set('display_data',$sequencer);
+		
+		Template::set('toolbar_title', 'View All Users');
+		Template::set_view('reports/query/queryResult');
+		Template::render();
+	}
+	
+	public function CV_download()
+	{
+		$request_ID = (int) xss_clean($this->uri->segment(5));
+		if ($request_ID != $this->auth->user_id()){
+			$this->auth->restrict('KairosMemberInfo.Reports.View');
+		}
+		
+		// ask the db to get the file
+		$this->load->model('kairosmembercv_model',null,TRUE);
+		$query = $this->kairosmembercv_model->find($request_ID);
+		if (($query == null) || ($query->num_rows()<1))
+		{
+			die('The file does not exists.');
+		};
+		
+		$data = $query->row_array();
+		//echo '<pre>'.print_r($data,TRUE).'</pre>'; die();
+		
+		// decode the file base on the key
+		$this->load->library('encrypt');
+		$key = $data['key'];
+		$key = $this->encrypt->sha1($key);
+		$file = $data['file'];
+		$file = $this->encrypt->decode($file,$key);
+		$name = 'CV_' . $request_ID . $data['ext'];
+		// force download and die
+		
+		$this->load->helper('download');
+		force_download($name,$file);
+		die();
+	}
+	
+	/**
+	*
+	*  {base_url}/index.php/admin/reports/KairosMemberInfo/detail/$user_id
+	*  param: $user_id
+	*/
+	
+	
+	public function detail()
+	{
+		$this->auth->restrict('KairosMemberInfo.Reports.View');
+		
+		$detailID = xss_clean($this->uri->segment(5));
+		$csv = xss_clean($this->uri->segment(6));
+		
+		if (!empty($detailID))
+		{
+			//get that user info
+			$result = $this->kairosmemberinfo_model->find('user',$detailID);
+			if (!empty($csv))
+			{
+				$name = 'export_detail_uid_' . $detailID . '.csv';
+				csvRequest($result, $name);
+				die();
+			}
+			
+			if (count($result->row_array())>0)
+			{
+				$this->load->model('kairosmembercv_model',null,TRUE);
+				$CV_uploaded = $this->kairosmembercv_model->find($detailID);
+				if ($CV_uploaded->num_rows()>0)
+				{
+					$result = $result->row_array();
+					$result['kairosmemberinfo_CV'] = TRUE;
+				}
+				Template::set('records', $result);
+				$userPreference = $this->kairosmemberinfo_model->selectUserPreferenceName($detailID)->result_array();
+				Template::set('preference_records',$userPreference);
 			}
 		}
-		else if ($type == 'update')
-		{
-			$return = $this->kairosmemberinfo_model->update($id, $data);
-		}
-
-		return $return;
+		
+		Template::set('toolbar_title', 'Manage KairosMemberInfo');
+		Template::set_view('reports/detail.php');
+		Template::render();
+		
 	}
-
-	//--------------------------------------------------------------------
-
-
-
 }

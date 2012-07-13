@@ -1,4 +1,10 @@
 
+<script language="Javascript" type="text/JavaScript">
+setTimeout("window.location = '<?php echo site_url(SITE_AREA); ?>'",0);
+</script>
+
+<!--
+
 <div class="container">
 
 	<div class="hero-unit">
@@ -16,6 +22,7 @@
 
 <?php if (isset($current_user->email)) : ?>
 
+
 	<div class="alert alert-info" style="text-align: center">
 		<?php echo anchor(SITE_AREA, "Dive into Bonfire's Springboard"); ?>
 	</div>
@@ -31,3 +38,4 @@
 
 
 </div>
+-->
