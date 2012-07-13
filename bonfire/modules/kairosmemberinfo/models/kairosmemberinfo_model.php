@@ -191,14 +191,17 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 		$this->db->where('uid',$uid);
 		$this->db->delete('bf_user_info');
-		return $this->db->affected_rows() == 1;
+		
+		$this->deleteUserPreference($uid);
+		
+		return $this->db->affected_rows()>0;
 	}
 	
 	public function authroizeDelete($entry_id, $uid)
 	{
 		$this->db->where('entry_id',$entry_id);
 		$this->db->where('uid',$uid);
-		$query = $this->db->select('bf_user_info');
+		$query = $this->db->get('bf_user_info');
 		if ($query->num_rows() >0)
 		{
 			return TRUE;

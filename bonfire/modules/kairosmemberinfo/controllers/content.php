@@ -290,6 +290,9 @@ class content extends Admin_Controller {
 	*/
 	private function save_kairosmemberinfo($type='insert', $id=0)
 	{
+		if ($id == 0){
+			$id = $this->auth->user_id();
+		}
 		if ($type == 'update') {
 			$_POST['id'] = $id;
 		}
@@ -399,6 +402,11 @@ class content extends Admin_Controller {
 	
 	public function create_cv() {
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
+		
+		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows() <= 0){
+			Template::set_message('You need to fill information before uploading your CV', 'error');
+			Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create');
+		}
 		
 		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo.js');
 
