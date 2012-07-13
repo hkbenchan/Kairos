@@ -439,6 +439,37 @@ class reports extends Admin_Controller {
 		Template::render();
 	}
 	
+	public function CV_download()
+	{
+		$request_ID = (int) xss_clean($this->uri->segment(5));
+		if ($request_ID != $this->auth->user_id()){
+			$this->auth->restrict('KairosMemberInfo.Reports.View');
+		}
+		
+		// ask the db to get the file
+		$this->load->model('kairosmembercv_model',null,TRUE);
+		$query = $this->kairosmembercv_model->find($request_ID);
+		if (($query == null) || ($query->num_rows()<1))
+		{
+			die('The file does not exists.');
+		};
+		
+		$data = $query->row_array();
+		//echo '<pre>'.print_r($data,TRUE).'</pre>'; die();
+		
+		// decode the file base on the key
+		$this->load->library('encrypt');
+		$key = $data['key'];
+		$key = $this->encrypt->sha1($key);
+		$file = $data['file'];
+		$file = $this->encrypt->decode($file,$key);
+		$name = 'CV_' . $request_ID . $data['ext'];
+		// force download and die
+		
+		$this->load->helper('download');
+		force_download($name,$file);
+		die();
+	}
 	
 	/**
 	*
@@ -467,7 +498,14 @@ class reports extends Admin_Controller {
 			
 			if (count($result->row_array())>0)
 			{
-				Template::set('records', $result->row_array());
+				$this->load->model('kairosmembercv_model',null,TRUE);
+				$CV_uploaded = $this->kairosmembercv_model->find($detailID);
+				if ($CV_uploaded->num_rows()>0)
+				{
+					$result = $result->row_array();
+					$result['kairosmemberinfo_CV'] = TRUE;
+				}
+				Template::set('records', $result);
 			}
 		}
 		

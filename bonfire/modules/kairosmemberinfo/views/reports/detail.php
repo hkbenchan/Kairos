@@ -75,6 +75,12 @@
 					<td>Receive future Newsletter (T/F)</td>
 					<td><?php echo $records['kairosmemberinfo_newsletterUpdate']==1 ? 'T':'F'; ?></td>
 				</tr>
+				<?php if (isset($records['kairosmemberinfo_CV'])): ?>
+				<tr>
+					<td>CV download:</td>
+					<td><?php echo anchor_popup(SITE_AREA. '/reports/kairosmemberinfo/CV_download/' . $records['uid'], 'Download via here');?></td>
+				</tr>
+				<?php endif; ?>
 			<?php else: ?>
 				<tr>
 					<td colspan="11">You have entered an invalid user id. Please try again.</td>

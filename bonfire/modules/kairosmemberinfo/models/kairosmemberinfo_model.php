@@ -422,5 +422,25 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 		return $query;
 	}
+	
+	public function listCountry(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_country');
+	}
+	
+	public function listUniversity(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_university');
+	}
+	
+	public function listIndustry(){
+		$this->db->order_by('name');
+		return $this->db->get('bf_industry');
+	}
+	
+	public function listPreference(){
+		$this->db->order_by('description');
+		return $this->db->get('bf_preference');
+	}
 }
 

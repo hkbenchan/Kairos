@@ -24,6 +24,9 @@
 					<td>
 					<?php //echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/viewGroupByUniversity/0/1', 'Export to CSV'); ?>
 					</td>
+					<?php if (count($display_header)-2>0) : ?>
+						<td colspan="<?php echo (count($display_header)-2); ?>"></td>
+					<?php endif; ?>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -59,7 +62,7 @@
 			<?php endforeach; ?>
 			<?php else: ?>
 				<tr>
-					<td colspan="2">No record is available.</td>
+					<td colspan="<?php echo count($display_header); ?>">No record is available.</td>
 				</tr>
 			<?php endif; ?>
 			</tbody>
