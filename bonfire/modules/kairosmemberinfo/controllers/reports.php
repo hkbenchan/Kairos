@@ -506,6 +506,8 @@ class reports extends Admin_Controller {
 					$result['kairosmemberinfo_CV'] = TRUE;
 				}
 				Template::set('records', $result);
+				$userPreference = $this->kairosmemberinfo_model->selectUserPreferenceName($detailID)->result_array();
+				Template::set('preference_records',$userPreference);
 			}
 		}
 		
