@@ -111,7 +111,9 @@
 					<input class="btn btn-primary" type="submit" value="Back" onclick="javascript:history.go(-1);return false;" />
 					</td>
 					<td>
+					<?php if (isset($url_csv)) : ?>
 					<input class="btn btn-info" type="submit" value="Export to CSV" onclick="javascript:csv_call('<?php echo $url_csv; ?>');"/>
+					<?php endif; ?>
 					</td>
 				</tr>
 			</tfoot>
