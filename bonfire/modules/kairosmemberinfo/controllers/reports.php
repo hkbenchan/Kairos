@@ -24,8 +24,9 @@ class reports extends Admin_Controller {
 		$this->load->helper('exporter');
 		$this->load->library('info_display');
 		
-			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
-			Assets::add_js('jquery-ui-1.8.13.min.js');
+		Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
+		Assets::add_js('jquery-ui-1.8.13.min.js');
+		Assets::add_module_js('kairosmemberinfo', 'kairosmemberinfo_report.js');
 		Template::set_block('sub_nav', 'reports/_sub_nav');
 	}
 
@@ -140,7 +141,6 @@ class reports extends Admin_Controller {
 			
 			
 			// render the page
-			
 		}
 		Template::redirect(SITE_AREA . '/reports/kairosmemberinfo/');
 	}
@@ -407,8 +407,8 @@ class reports extends Admin_Controller {
 		$this->pagination_config['total_rows'] = $query->num_rows();
 
 		$this->pagination->initialize($this->pagination_config); 
-		
-		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], xss_clean($this->uri->segment(5)));
+		$url_seg = xss_clean($this->uri->segment(5));
+		$query = $this->kairosmemberinfo_model->getAllUsers($this->pagination_config['per_page'], $url_seg);
 		//print_r($query); die();
 		
 		$config_header = array (
@@ -430,10 +430,14 @@ class reports extends Admin_Controller {
 				'variable' => 'uid',
 			),
 		);
-
+		if (!empty($url_seg))
+			$csv_url = current_url().'/1';
+		else
+			$csv_url = current_url().'/0/1';
+		
 		$sequencer = $this->info_display->set_sequence($config_header,$query->result(),$config_url);
 		Template::set('display_data',$sequencer);
-		
+		Template::set('url_csv', $csv_url);
 		Template::set('toolbar_title', 'View All Users');
 		Template::set_view('reports/query/queryResult');
 		Template::render();
@@ -507,7 +511,8 @@ class reports extends Admin_Controller {
 				Template::set('preference_records',$userPreference);
 			}
 		}
-		
+		$csv_url = current_url().'/1';
+		Template::set('url_csv',$csv_url);
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::set_view('reports/detail.php');
 		Template::render();

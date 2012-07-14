@@ -1,6 +1,5 @@
 <!-- General Query Result -->
 <div class="">
-	<h3></h3>
 	<div class = "header">
 	</div>
 	<div class = "container">
@@ -19,14 +18,22 @@
 			<tfoot>
 				<tr>
 					<td>
-					<?php echo $this->pagination->create_links(); ?>
+					<input class="btn btn-primary" type="submit" value="Back" onclick="javascript:history.go(-1);return false;" />
 					</td>
 					<td>
-					<?php //echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/viewGroupByUniversity/0/1', 'Export to CSV'); ?>
+					<input class="btn btn-info" type="submit" value="Export to CSV" onclick="javascript:csv_call('<?php
+					if (isset($url_csv))
+					echo $url_csv;
+					?>');"/>
 					</td>
 					<?php if (count($display_header)-2>0) : ?>
 						<td colspan="<?php echo (count($display_header)-2); ?>"></td>
 					<?php endif; ?>
+				</tr>
+				<tr>
+					<td colspan= "<?php echo (count($display_header)); ?>">
+					<?php echo $this->pagination->create_links(); ?>
+					</td>
 				</tr>
 			</tfoot>
 			<tbody>
