@@ -70,6 +70,7 @@ class content extends Admin_Controller {
 			$records = $records->row_array();
 			if ($this->kairosmembercv_model->find($this->auth->user_id())->num_rows() == 0){
 				Template::set_message(lang('kairosmemberinfo_missing_part_two'),'attention');
+				Template::redirect(SITE_AREA.'/content/kairosmemberinfo/create_cv');
 			}
 			else {
 				$records['kairosmemberinfo_CV'] = TRUE;
@@ -80,8 +81,8 @@ class content extends Admin_Controller {
 			Template::set('preference_records',$userPreference);
 		}
 		else {
-			Template::set('records', null);
 			Template::set_message(lang('kairosmemberinfo_missing_part_one'), 'attention');
+			Template::redirect(SITE_AREA.'/content/kairosmemberinfo/create');
 		}
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();

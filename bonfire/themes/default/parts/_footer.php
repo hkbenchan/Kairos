@@ -5,8 +5,10 @@
 	        <?php if (ENVIRONMENT == 'development') :?>
 				<p style="float: right; margin-right: 80px;">Page rendered in {elapsed_time} seconds, using {memory_usage}.</p>
 			<?php endif; ?>
-	
-			<p>Powered Proudly by <a href="http://cibonfire.com" target="_blank">Bonfire <?php echo BONFIRE_VERSION ?></a></p>
+			<p style="float: right; margin-right: 80px; text-align:right;">Kairos Society HK &copy; All Rights Reserved.
+			All information we collect is for internal use only.<br>We will not distribute to any other parties for any purposes without your consent.<br>
+			Powered Proudly by <a href="http://cibonfire.com" target="_blank">Bonfire <?php echo BONFIRE_VERSION ?></a></p>
+			
 		</div>
 	</footer>
 	

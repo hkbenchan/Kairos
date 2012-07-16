@@ -1,9 +1,12 @@
 	<footer class="container-fluid footer">
-		<p class="pull-right">
+		<p class="pull-right" style="text-align:right;">
 			Executed in {elapsed_time} seconds, using {memory_usage}.
 			<br/>
+			Kairos Society HK &copy; All Rights Reserved.<br>
+			All information we collect is for internal use only.<br>We will not distribute to any other parties for any purposes without your consent.<br>
 			Powered by <a href="http://cibonfire.com" target="_blank"><i class="icon-fire">&nbsp;</i>&nbsp;Bonfire</a> <?php echo BONFIRE_VERSION ?>
 		</p>
+		
 	</footer>
 
 	<div id="debug"><!-- Stores the Profiler Results --></div>
