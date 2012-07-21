@@ -47,7 +47,7 @@ class Announcement_model extends BF_Model {
 		}
 		
 		$this->db->where('entry_id', $entry_id);
-		$this->db->update('bf_annoucements',$data);
+		$this->db->update('bf_announcements',$data);
 		
 		return $this->db->affected_rows();
 	}

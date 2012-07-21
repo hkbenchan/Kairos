@@ -107,7 +107,7 @@
 				<tr>
 					<td>
 					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], 
-					'<i class="icon-pencil">&nbsp;</i><input type="submit" onclick="javascript:return false;" class="btn btn-inverse" value="EDIT"/>'); ?>
+					'<i class="icon-pencil">&nbsp;</i>EDIT',array('class'=>'btn btn-inverse')); ?>
 					<input class="btn btn-primary" type="submit" value="Back" onclick="javascript:history.go(-1);return false;" />
 					</td>
 					<td>
