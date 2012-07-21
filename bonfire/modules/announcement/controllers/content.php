@@ -215,7 +215,7 @@ class content extends Admin_Controller
 		}
 		
 		$this->form_validation->set_rules('announcement_title', 'Title','required|xss_clean|trim|max_length[100]|min_length[1]');
-		$this->form_validation->set_rules('ck_content','Content','required|xss_clean');
+		$this->form_validation->set_rules('ck_content','Content','required');
 		
 		if ($this->form_validation->run() === FALSE) {
 			$form_data = array(
