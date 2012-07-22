@@ -212,7 +212,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		}
 	}
 	
-	public function groupByUniversity($limit = 0, $offset = 0)
+	public function groupByUniversity($limit = null, $offset = null)
 	{
 		
 		if (!is_numeric($limit))
@@ -235,7 +235,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function membersInUniversity($uni_ID, $limit = 0, $offset = 0)
+	public function membersInUniversity($uni_ID, $limit = null, $offset = null)
 	{
 		
 		if (!is_numeric($limit))
@@ -258,7 +258,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function allVentureOwner($limit = 0 , $offset = 0)
+	public function allVentureOwner($limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{
@@ -282,7 +282,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 	}
 	
-	public function groupByIndustry($limit = 0, $offset = 0)
+	public function groupByIndustry($limit = null, $offset = null)
 	{
 		
 		
@@ -307,7 +307,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 	}
 	
-	public function membersInIndustry($industry_ID, $limit = 0, $offset = 0)
+	public function membersInIndustry($industry_ID, $limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{
@@ -369,7 +369,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function getAllUsers($limit = 0 , $offset = 0)
+	public function getAllUsers($limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{

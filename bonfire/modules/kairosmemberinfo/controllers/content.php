@@ -14,8 +14,8 @@ class content extends Admin_Controller {
 		$this->lang->load('kairosmemberinfo');
 		$this->load->helper('security');
 		
-			Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
-			//Assets::add_js('jquery-ui-1.8.13.min.js');
+		Assets::add_css('flick/jquery-ui-1.8.13.custom.css');
+		Assets::add_js('jquery-ui-1.8.13.min.js');
 		Template::set_block('sub_nav', 'content/_sub_nav');
 	}
 
@@ -70,6 +70,7 @@ class content extends Admin_Controller {
 			$records = $records->row_array();
 			if ($this->kairosmembercv_model->find($this->auth->user_id())->num_rows() == 0){
 				Template::set_message(lang('kairosmemberinfo_missing_part_two'),'attention');
+				Template::redirect(SITE_AREA.'/content/kairosmemberinfo/create_cv');
 			}
 			else {
 				$records['kairosmemberinfo_CV'] = TRUE;
@@ -80,8 +81,8 @@ class content extends Admin_Controller {
 			Template::set('preference_records',$userPreference);
 		}
 		else {
-			Template::set('records', null);
 			Template::set_message(lang('kairosmemberinfo_missing_part_one'), 'attention');
+			Template::redirect(SITE_AREA.'/content/kairosmemberinfo/create');
 		}
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::render();
@@ -402,8 +403,8 @@ class content extends Admin_Controller {
 	
 	public function create_cv() {
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
-		
-		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows() <= 0){
+		$result = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
+		if ($result == null || $result->num_rows() <= 0){
 			Template::set_message('You need to fill information before uploading your CV', 'error');
 			Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create');
 		}
@@ -441,19 +442,19 @@ class content extends Admin_Controller {
 			fclose($fp);
 			//remove the temp file
 			unlink($data['full_path']);
-			$this->load->library('encrypt');
+			/*$this->load->library('encrypt');
 			
 			$key = time();
 			$key1 = $this->encrypt->sha1($key);
 			$content = $this->encrypt->encode($content,$key);
-			
+			*/
 			$insert_data = array(
 				'uid'	=> $this->auth->user_id(),
 				'name' => $data['file_name'],
 				'size' => $data['file_size'],
 				'type' => $data['file_type'],
 				'ext' => $data['file_ext'],
-				'key' => $key,
+				'key' => '',
 				'file' => $content,
 			);
 			

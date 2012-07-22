@@ -53,8 +53,9 @@ class Content extends Admin_Controller
 	 */
 	public function index()
 	{
-		Template::set_view('admin/content/index');
-		Template::render();
+		//Template::set_view('admin/content/index');
+		//Template::render();
+		Template::redirect(SITE_AREA.'/content/kairosmemberinfo');
 	}//end index()
 
 	//--------------------------------------------------------------------

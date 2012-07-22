@@ -1,0 +1,35 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+$lang['announcement_manage']			= 'Manage Announcement';
+$lang['announcement_edit']				= 'Edit';
+$lang['announcement_true']				= 'True';
+$lang['announcement_false']				= 'False';
+$lang['announcement_create']			= 'Create';
+$lang['announcement_list']				= 'List';
+$lang['announcement_new']				= 'Create';
+$lang['announcement_manage']			= 'Manage';
+$lang['announcement_edit_text']			= '<p>Edit this to suit your needs</p>';
+$lang['announcement_no_announcements']		= 'There aren\'t any announcements in the system.';
+$lang['announcement_create_new']			= 'Create a new announcement.';
+$lang['announcement_create_success']			= 'Your announcement is published.';
+$lang['announcement_create_failure']			= 'There was a problem publishing your announcement: ';
+$lang['announcement_create_new_button']			= 'Create New Announcement';
+$lang['announcement_invalid_id']			= 'Invalid announcement ID.';
+$lang['announcement_edit_success']			= 'Announcement successfully saved.';
+$lang['announcement_edit_failure']			= 'There was a problem saving the announcement: ';
+$lang['announcement_edit_start_failure']	= 'There is a problem starting the editing: ';
+$lang['announcement_delete_success']			= 'announcement(s) successfully deleted.';
+$lang['announcement_delete_failure']			= 'We could not delete the announcement: ';
+$lang['announcement_delete_error']			= 'You have not selected any announcement to delete.';
+$lang['announcement_actions']				= 'Actions';
+$lang['announcement_cancel']				= 'Cancel';
+$lang['announcement_delete_announcement']		= 'Delete this announcement';
+$lang['announcement_delete_confirm']		= 'Are you sure you want to delete announcement(s)?';
+$lang['announcement_edit_heading']			= 'Edit announcement';
+$lang['announcement_delete_not_auth']		= 'You do not have permission to delete this announcement.';
+$lang['announcement_edit_permission_error'] = 'You do not have permission to edit other\'s profile. Redirect back to your profile.';
+
+// Activities
+$lang['announcement_act_create_announcement']			= 'Created announcement with ID';
+$lang['announcement_act_create_cv_announcement']		= 'Upload CV with ID';
+$lang['announcement_act_edit_announcement']				= 'Updated announcement with ID';
+$lang['announcement_act_delete_announcement']			= 'Deleted announcement with ID';
