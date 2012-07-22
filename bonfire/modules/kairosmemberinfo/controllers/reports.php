@@ -195,6 +195,7 @@ class reports extends Admin_Controller {
 		if (!empty($uni_ID))
 		{
 			$query = $this->kairosmemberinfo_model->membersInUniversity($uni_ID);
+			$this->email_send_checker($query);
 			
 			$csv = xss_clean($this->uri->segment(7));
 
@@ -243,6 +244,7 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$query = $this->kairosmemberinfo_model->allVentureOwner();
+		$this->email_send_checker($query);
 		
 		$csv = xss_clean($this->uri->segment(6));
 		
@@ -291,6 +293,7 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		
 		$query = $this->kairosmemberinfo_model->groupByIndustry();
+		
 		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($csv))
@@ -343,6 +346,7 @@ class reports extends Admin_Controller {
 		if (!empty($industry_ID))
 		{
 			$query = $this->kairosmemberinfo_model->membersInIndustry($industry_ID);
+			$this->email_send_checker($query);
 			
 			if (!empty($csv))
 			{
@@ -389,8 +393,10 @@ class reports extends Admin_Controller {
 	public function viewAllUsers()
 	{
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
-		
 		$query = $this->kairosmemberinfo_model->getAllUsers();
+		
+		$this->email_send_checker($query);
+		
 		$csv = xss_clean($this->uri->segment(6));
 		
 		if (!empty($csv))
@@ -516,6 +522,25 @@ class reports extends Admin_Controller {
 		Template::set('toolbar_title', 'Manage KairosMemberInfo');
 		Template::set_view('reports/detail.php');
 		Template::render();
+		
+	}
+	
+	private function email_send_checker($query = null){
+		
+		if ($this->input->post('email')) {
+			$this->load->library('data_keeper');
+			
+			$users = array();
+			if ($query != null) {
+				foreach ($query->result() as $row){
+					$users[] = $row->uid;
+				}
+
+				$this->data_keeper->set_data('emailer',$users);
+			
+				Template::redirect(SITE_AREA.'/settings/emailer/create');
+			}
+		}
 		
 	}
 }

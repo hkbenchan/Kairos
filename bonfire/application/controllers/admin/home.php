@@ -52,7 +52,7 @@ class Home extends Admin_Controller
 	 */
 	public function index()
 	{
-		redirect(SITE_AREA .'/content/kairosmemberinfo');
+		redirect(SITE_AREA .'/content');
 	}//end index()
 
 	//--------------------------------------------------------------------
