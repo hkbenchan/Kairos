@@ -65,7 +65,7 @@ class content extends Admin_Controller {
 		$records = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
 		
 		Template::set_view('reports/detail');
-		if ($records != null) {
+		if ($records->num_rows()>0) {
 			$this->load->model('kairosmembercv_model',null,true);
 			$records = $records->row_array();
 			if ($this->kairosmembercv_model->find($this->auth->user_id())->num_rows() == 0){
@@ -102,7 +102,7 @@ class content extends Admin_Controller {
 	{
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
 		
-		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id()) != null)
+		if ($this->kairosmemberinfo_model->find('user',$this->auth->user_id())->num_rows()>0)
 			Template::redirect(SITE_AREA . '/content/kairosmemberinfo/edit/' . $this->auth->user_id());
 		if ($this->input->post('submit'))
 		{
@@ -195,8 +195,8 @@ class content extends Admin_Controller {
 			}
 		}
 		else {
-			//$uid = $this->auth->user_id();
-			$result = $this->kairosmemberinfo_model->find('user', $id)->row_array($id);;
+
+			$result = $this->kairosmemberinfo_model->find('user', $id)->row_array($id);
 		
 			// break down the dob
 			$dob = explode('-',$result['kairosmemberinfo_dob']);
@@ -404,7 +404,7 @@ class content extends Admin_Controller {
 	public function create_cv() {
 		$this->auth->restrict('KairosMemberInfo.Content.Create');
 		$result = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
-		if ($result == null || $result->num_rows() <= 0){
+		if ($result->num_rows() <= 0){
 			Template::set_message('You need to fill information before uploading your CV', 'error');
 			Template::redirect(SITE_AREA .'/content/kairosmemberinfo/create');
 		}

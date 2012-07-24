@@ -28,7 +28,7 @@ class Data_keeper {
 		self::$ci =& get_instance();
 		self::$ci->load->library('session');
 		
-		if (self::$data_master = self::$ci->session->flashdata('data_master')){
+		if (self::$data_master = self::$ci->session->set_userdata('data_master')){
 		} else {
 			self::$data_master = array();
 		}
@@ -41,12 +41,12 @@ class Data_keeper {
 	 *
 	 */
 	
-	public function set_data($key,$data_need_to_save){
-		if (isset(self::$data_master[$key])) {
+	public function set_data($key,$data_need_to_save,$override = FALSE){
+		if (isset(self::$data_master[$key]) && !($override)) {
 			return false;
 		} else {
 			self::$data_master[$key] = $data_need_to_save;
-			self::$ci->session->set_flashdata('data_master',self::$data_master);
+			self::$ci->session->set_userdata('data_master',self::$data_master);
 			return true;
 		}
 	}

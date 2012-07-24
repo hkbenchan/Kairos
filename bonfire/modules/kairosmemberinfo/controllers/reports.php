@@ -19,6 +19,8 @@ class reports extends Admin_Controller {
 
 		$this->auth->restrict('KairosMemberInfo.Reports.View');
 		$this->load->model('kairosmemberinfo_model', null, true);
+		$this->load->model('kairosmembercv_model', null, true);
+		$this->load->model('kairosmembership_model', null, true);
 		$this->lang->load('kairosmemberinfo');
 		$this->load->helper('security');
 		$this->load->helper('exporter');
@@ -457,7 +459,6 @@ class reports extends Admin_Controller {
 		}
 		
 		// ask the db to get the file
-		$this->load->model('kairosmembercv_model',null,TRUE);
 		$query = $this->kairosmembercv_model->find($request_ID);
 		if (($query == null) || ($query->num_rows()<1))
 		{
@@ -504,7 +505,6 @@ class reports extends Admin_Controller {
 
 			if ($result->num_rows()>0)
 			{
-				$this->load->model('kairosmembercv_model',null,TRUE);
 				$CV_uploaded = $this->kairosmembercv_model->find($detailID);
 				$result_row = $result->first_row('array');
 				if ($CV_uploaded->num_rows()>0)
@@ -541,6 +541,88 @@ class reports extends Admin_Controller {
 				Template::redirect(SITE_AREA.'/settings/emailer/create');
 			}
 		}
+		
+	}
+	
+	public function manage(){
+		$this->auth->restrict('Kairosmemberinfo.Reports.View');
+		$this->auth->restrict('Kairosmemberinfo.Reports.Edit');
+		
+		// get all users' status -- Info, CV, Payment
+		$this->load->model('users/user_model');
+		$users = $this->user_model->select('id, email, username, display_name')->find_all();
+		
+		foreach ($users as $id=>$row) {
+			$q = $this->kairosmemberinfo_model->find('user',$row->id);
+			$q2 = $this->kairosmembercv_model->find($row->id);
+			$q3 = $this->kairosmembership_model->find($row->id);
+			
+			if ($q->num_rows()>0) {
+				$row->filled_info = 'T';
+			} else {
+				$row->filled_info = 'F';
+			}
+			
+			if ($q2->num_rows()>0) {
+				$row->filled_cv = 'T';
+			} else {
+				$row->filled_cv = 'F';
+			}
+			
+			if ($q3->num_rows()>0) {
+				$row->filled_ship = 'T';
+			} else {
+				$row->filled_ship = 'F';
+			}
+		}
+		/*
+		echo '<pre>'.print_r($users,TRUE).'</pre>';
+		die();
+		*/
+		Template::set('toolbar_title', 'Manage Users');
+		Template::set('users',$users);
+		Template::render();
+	}
+	
+	public function manage_status(){
+		$this->auth->restrict('Kairosmemberinfo.Reports.View');
+		$this->auth->restrict('Kairosmemberinfo.Reports.Edit');
+		
+		if ($total = (int)xss_clean($this->input->post('total'))) {
+			
+			// form validation
+			for($i=0; $i<$total; $i++){
+				
+			}
+			
+		} elseif ($checked = xss_clean($this->input->post('checked'))) {
+			//foreach checked, get their info
+			$users_array = array();
+			$total = 0;
+			foreach($checked as $user){
+				//echo $user;
+				$tmp = array();
+				$q = $this->kairosmemberinfo_model->find('user',$user);
+				$tmp['info'] = $q->first_row('array');
+				$q = $this->kairosmembership_model->find($user);
+				$tmp['ship'] = $q->first_row('array');
+				$users_array[$total++] = $tmp;
+			}
+			//echo '<pre>'.print_r($users_array,TRUE).'</pre>';
+			//die();
+			
+			Template::set('users_data',$users_array);
+			Template::set('total',$total);
+			Template::set('toolbar_title', 'Edit Users\' Status');
+			Template::render();
+		} else {
+			Template::set_message('Please select at least one user to edit','error');
+			Template::redirect(SITE_AREA.'/reports/kairosmemberinfo/manage');
+		}
+		
+		
+		
+		
 		
 	}
 }
