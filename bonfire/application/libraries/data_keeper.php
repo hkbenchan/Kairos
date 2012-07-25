@@ -28,7 +28,7 @@ class Data_keeper {
 		self::$ci =& get_instance();
 		self::$ci->load->library('session');
 		
-		if (self::$data_master = self::$ci->session->set_userdata('data_master')){
+		if (self::$data_master = self::$ci->session->userdata('data_master')){
 		} else {
 			self::$data_master = array();
 		}
@@ -56,6 +56,13 @@ class Data_keeper {
 			return self::$data_master[$key];
 		} else {
 			return null;
+		}
+	}
+	
+	public function clear_data($key){
+		if (isset(self::$data_master[$key])) {
+			unset(self::$data_master[$key]);
+			self::$ci->session->set_userdata('data_master',self::$data_master);
 		}
 	}
 

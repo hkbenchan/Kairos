@@ -588,41 +588,140 @@ class reports extends Admin_Controller {
 		$this->auth->restrict('Kairosmemberinfo.Reports.View');
 		$this->auth->restrict('Kairosmemberinfo.Reports.Edit');
 		
-		if ($total = (int)xss_clean($this->input->post('total'))) {
-			
-			// form validation
-			for($i=0; $i<$total; $i++){
-				
-			}
-			
-		} elseif ($checked = xss_clean($this->input->post('checked'))) {
-			//foreach checked, get their info
-			$users_array = array();
-			$total = 0;
-			foreach($checked as $user){
-				//echo $user;
-				$tmp = array();
-				$q = $this->kairosmemberinfo_model->find('user',$user);
-				$tmp['info'] = $q->first_row('array');
-				$q = $this->kairosmembership_model->find($user);
-				$tmp['ship'] = $q->first_row('array');
-				$users_array[$total++] = $tmp;
-			}
-			//echo '<pre>'.print_r($users_array,TRUE).'</pre>';
-			//die();
-			
-			Template::set('users_data',$users_array);
-			Template::set('total',$total);
-			Template::set('toolbar_title', 'Edit Users\' Status');
-			Template::render();
-		} else {
+		if (!(xss_clean($this->input->post('checked'))) && !(xss_clean($this->input->post('total')))) {
 			Template::set_message('Please select at least one user to edit','error');
 			Template::redirect(SITE_AREA.'/reports/kairosmemberinfo/manage');
 		}
 		
+		if ($checked = xss_clean($this->input->post('checked'))) {
+			$this->load->library('data_keeper');
+			$this->data_keeper->set_data('checked',$checked, TRUE);
+			
+		}
 		
+		if ($total = (int)xss_clean($this->input->post('total'))) {
+			
+			if (!($ignore = $this->input->post('ignore'))){
+				$ignore = array();
+			}
+			
+			$form_data = array();
+			// form validation
+			for($i=0; $i<$total; $i++){
+				if (array_search($i,$ignore) !== FALSE){
+					//skip this entry
+				} else {
+					$this->form_validation->set_rules('m_type_'.$i,'User '.($i+1).'\'s Membership Type','required|xss_clean|max_length[30]');
+					$this->form_validation->set_rules('valid_from_d_'.$i,'User '.($i+1).'\'s Valid From Day','numeric|required|xss_clean|max_length[2]');
+					$this->form_validation->set_rules('valid_from_m_'.$i,'User '.($i+1).'\'s Valid From Month','numeric|required|xss_clean|max_length[2]');
+					$this->form_validation->set_rules('valid_from_y_'.$i,'User '.($i+1).'\'s Valid From Year','numeric|required|xss_clean|max_length[4]');
+					$this->form_validation->set_rules('valid_to_d_'.$i,'User '.($i+1).'\'s Valid To Day','numeric|required|xss_clean|max_length[2]');
+					$this->form_validation->set_rules('valid_to_m_'.$i,'User '.($i+1).'\'s Valid To Month','numeric|required|xss_clean|max_length[2]');
+					$this->form_validation->set_rules('valid_to_y_'.$i,'User '.($i+1).'\'s Valid To Year','numeric|required|xss_clean|max_length[4]');
+					$this->form_validation->set_rules('paid_'.$i,'User '.($i+1).'\'s Paid', 'required|xss_clean|max_length[1]');
+					
+				}
+				
+				$temp = array();
+				$temp['uid'] = (int)($this->input->post('uid_'.$i));
+				$temp['m_type'] = xss_clean($this->input->post('m_type_'.$i));
+				$temp['valid_from_d'] = xss_clean($this->input->post('valid_from_d_'.$i));
+				$temp['valid_from_m'] = xss_clean($this->input->post('valid_from_m_'.$i));
+				$temp['valid_from_y'] = xss_clean($this->input->post('valid_from_y_'.$i));
+				$temp['valid_to_d'] = xss_clean($this->input->post('valid_to_d_'.$i));
+				$temp['valid_to_m'] = xss_clean($this->input->post('valid_to_m_'.$i));
+				$temp['valid_to_y'] = xss_clean($this->input->post('valid_to_y_'.$i));
+				$temp['paid'] = xss_clean($this->input->post('paid_'.$i));
+				
+				$form_data[$i] = $temp;
+				unset($temp);
+			}
+			
+			if ($this->form_validation->run() == FALSE) {
+				$this->load->library('data_keeper');
+				$checked = $this->data_keeper->get_data('checked');
+				
+				Template::set('ignore',$ignore);
+				Template::set('form_data',$form_data);
+			} else {
+				
+				$success_query = 0;
+				for($i = 0; $i < $total; $i++){
+					if (array_search($i,$ignore)!==FALSE) {
+						continue;
+					}
+					$tmp = $form_data[$i];
+					$tmp['valid_from'] = $tmp['valid_from_y'].'-'.$tmp['valid_from_m'].'-'.$tmp['valid_from_d'];
+					$tmp['valid_to'] = $tmp['valid_to_y'].'-'.$tmp['valid_to_m'].'-'.$tmp['valid_to_d'];
+					
+					unset($tmp['valid_from_y']);unset($tmp['valid_from_m']);unset($tmp['valid_from_d']);
+					unset($tmp['valid_to_y']);unset($tmp['valid_to_m']);unset($tmp['valid_to_d']);
+					if ($this->kairosmembership_model->find($tmp['uid'])->num_rows()>0) {
+						$affected_row = $this->kairosmembership_model->update($tmp['uid'],$tmp[$i]);
+						if ($affected_row > 0) {
+							$success_query++;
+							// log the activity
+						}
+					} else {
+						$id = $this->kairosmembership_model->insert($tmp);
+						if ($id !== FALSE) {
+							$success_query++;
+							// log the activity
+							
+						}
+					}
+					
+				}//end for
+				
+				if ($success_query > 0){
+					Template::set_message($success_query . ' record(s) have been added/updated.','success');
+					$this->load->library('data_keeper');
+					$this->data_keeper->clear_data('checked');
+					Template::redirect(SITE_AREA.'/reports/kairosmemberinfo/manage');
+				} else {
+					Template::set_message('Failed, because: '.$this->kairosmembership_model->error,'error');
+					$this->load->library('data_keeper');
+					$checked = $this->data_keeper->get_data('checked');
+
+					Template::set('ignore',$ignore);
+					Template::set('form_data',$form_data);
+				}
+			}
+			
+		}
 		
+		$users_array = array();
+		$total = 0;
+		if ($checked == null) {
+			Template::set_message('Your session data is expired, please submit again.','error');
+			Template::redirect(SITE_AREA.'/reports/kairosmemberinfo/manage');
+		}
+		foreach($checked as $user){
+			$tmp = array();
+			$tmp['id'] = $user;
+			$q = $this->kairosmemberinfo_model->find('user',$user);
+			$tmp['info'] = $q->first_row('array');
+			$q = $this->kairosmembership_model->find($user);
+			$tmp['ship'] = $q->first_row('array');
+			if (isset($tmp['ship']['valid_from'])) {
+				$d = explode('-',$tmp['ship']['valid_from']);
+				$tmp['ship']['valid_from_y'] = $d[0];
+				$tmp['ship']['valid_from_m'] = $d[1];
+				$tmp['ship']['valid_from_d'] = $d[2];
+			}
+			if (isset($tmp['ship']['valid_to'])) {
+				$d = explode('-',$tmp['ship']['valid_to']);
+				$tmp['ship']['valid_to_y'] = $d[0];
+				$tmp['ship']['valid_to_m'] = $d[1];
+				$tmp['ship']['valid_to_d'] = $d[2];
+			}
+			$users_array[$total++] = $tmp;
+		}
 		
+		Template::set('users_data',$users_array);
+		Template::set('total',$total);
+		Template::set('toolbar_title', 'Edit Users\' Status');
+		Template::render();
 		
 	}
 }
