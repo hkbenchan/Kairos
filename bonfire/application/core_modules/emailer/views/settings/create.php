@@ -14,14 +14,15 @@
 	<table class="table table-stripped">
 		<tbody>
 			<tr>
-				<td>Subject:</td>
+				<td style="width:10%;">Subject:</td>
 				<td><input type="text" size="50" name="email_subject" id="email_subject" value="<?php if (isset($email_subject)){echo $email_subject;} ?>"></td>
 			</tr>
 			<tr>
-				<td>Content:</td>
+				<td style="width:10%;">Content:</td>
 				<td><textarea name="email_content" id="email_content" rows="15" style="width:90%;"><?php 
 					if(isset($email_content)){echo $email_content;} 
 				?></textarea>
+				<?php echo display_ckeditor($ckeditor_data['ckeditor']); ?>
 				</td>
 			</tr>
 		</tbody>

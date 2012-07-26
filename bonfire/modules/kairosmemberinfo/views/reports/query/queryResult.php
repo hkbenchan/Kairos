@@ -17,18 +17,16 @@
 			
 			<tfoot>
 				<tr>
-					<td>
+					<?php echo form_open(); ?>
+					<td colspan="<?php echo (count($display_header)); ?>">
 					<input class="btn btn-primary" type="submit" value="Back" onclick="javascript:history.go(-1);return false;" />
-					</td>
-					<td>
-					<input class="btn btn-info" type="submit" value="Export to CSV" onclick="javascript:csv_call('<?php
+					<input class="btn btn-info" type="submit" name="csv" value="Export to CSV" onclick="javascript:csv_call('<?php
 					if (isset($url_csv))
 					echo $url_csv;
 					?>');"/>
+					<input class="btn btn-warning" type="submit" name="email" value="Send email to this group of people">
 					</td>
-					<?php if (count($display_header)-2>0) : ?>
-						<td colspan="<?php echo (count($display_header)-2); ?>"></td>
-					<?php endif; ?>
+					<?php echo form_close(); ?>
 				</tr>
 				<tr>
 					<td colspan= "<?php echo (count($display_header)); ?>">

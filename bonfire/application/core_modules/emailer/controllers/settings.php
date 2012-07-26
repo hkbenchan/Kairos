@@ -372,6 +372,14 @@ class Settings extends Admin_Controller
 		
 		$this->load->model('users/user_model');
 		$this->load->library('emailer');
+		$this->load->library('data_keeper');
+		if ($users_id = $this->data_keeper->get_data('emailer')) {
+			$checked = array();
+			foreach($users_id as $id){
+				$checked[] = $id;
+			}
+			Template::set('checked',$checked);
+		}
 
 		if ($this->input->post('submit')){
 			
@@ -410,6 +418,7 @@ class Settings extends Admin_Controller
 
 					if ($result)
 					{
+						$this->data_keeper->clear_data('emailer');
 						Template::set_message($success_count .' '. lang('em_create_email_success'), 'success');
 						Template::redirect(SITE_AREA . '/settings/emailer/queue');
 					}
@@ -428,10 +437,37 @@ class Settings extends Admin_Controller
 		}
 		$users = $this->user_model->find_all();
 		Template::set('users',$users);
+		$ckeditor = $this->ckeditor_setting(array());
+		$ckeditor['ckeditor']['id'] = 'email_content';
+		Template::set('ckeditor_data',$ckeditor);
 		Template::set('toolbar_title', lang('em_create_email'));
 		//Template::set_block('sub_nav', 'settings/_sub_nav');
 		Template::render();
 	}//end create()
+	
+	private function ckeditor_setting($data=null) {
+
+		$this->load->helper('ckeditor');
+		
+		//Ckeditor's configuration
+		$data['ckeditor'] = array(
+			
+			'path'	=>	'assets/js/ckeditor',
+			//Optionnal values
+			'config' => array(
+				'toolbar' 	=> 	"Full", 	//Using the Full toolbar
+				'width' 	=> 	"99%",	//Setting a custom width
+				'height' 	=> 	'500px',	//Setting a custom height
+			),
+		);
+		
+		return $data;
+	}
+	
+	
+	
+	
+	
 	//--------------------------------------------------------------------
 }//end class
 
