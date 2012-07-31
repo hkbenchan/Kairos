@@ -1,10 +1,7 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 class content extends Admin_Controller
-{
-	// extends CI_Controller for CI 2.x users
-	protected $data = array();
-	
+{	
 	public function __construct()
 	{
 		parent::__construct();
@@ -20,48 +17,6 @@ class content extends Admin_Controller
 		Template::set_block('sub_nav', 'content/_sub_nav');
 	}
 	
-	private function ckeditor_setting() {
-		//parent::Controller();
-		//parent::__construct(); //for CI 2.x users
-		$this->load->helper('ckeditor');
-		
-		//Ckeditor's configuration
-		$this->data['ckeditor'] = array(
-			
-			//ID of the textarea that will be replaced
-			'id' 	=> 	'ck_content',
-			'path'	=>	'assets/js/ckeditor',
-			//Optionnal values
-			'config' => array(
-				'toolbar' 	=> 	"Full", 	//Using the Full toolbar
-				'width' 	=> 	"800px",	//Setting a custom width
-				'height' 	=> 	'500px',	//Setting a custom height
-			),
-			/*
-			//Replacing styles from the "Styles tool"
-			'styles' => array(
-				//Creating a new style named "style 1"
-				'style 1' => array (
-					'name' 		=> 	'Blue Title',
-					'element' 	=> 	'h2',
-					'styles' => array(
-						'color' 	=> 	'Blue',
-						'font-weight' 	=> 	'bold'
-					)
-				),
-				//Creating a new style named "style 2"
-				'style 2' => array (
-					'name' 	=> 	'Red Title',
-					'element' 	=> 	'h2',
-					'styles' => array(
-						'color' 		=> 	'Red',
-						'font-weight' 		=> 	'bold',
-						'text-decoration'	=> 	'underline'
-					)
-				)
-			)*/
-		);
-	}
 	
 	public function index() {
 		
@@ -81,13 +36,15 @@ class content extends Admin_Controller
 		$this->pagination->initialize($pagination_config);
 		$query = $this->events_model->find_all_events($pagination_config['per_page'], xss_clean($this->uri->segment(5)))->result_array();
 		
+		$query2 = $this->events_model->find_user_join($this->auth->user_id())->result_array();
+		
 		Template::set('events_list',$query);
+		Template::set('user_events_list',$query2);
 		Template::set('toolbar_title', 'View events');
 		Template::render();
 	}
 	
 	public function join() {
-		$this->auth->restrict('events.Content.View');
 		
 		if ($this->input->post('join')) {
 			// recall all events and display and ask once again
@@ -122,12 +79,11 @@ class content extends Admin_Controller
 						$result = $this->events_model->insert_user_events($data);
 						if ($result['affected_rows']>0) {
 							//log the activity
-							
+							$this->activity_model->log_activity($this->current_user->id, ' joins event with event id: '. ': ' . $event_id . ' : ' . $this->input->ip_address(), 'events');
 							$joined++;
 						}
 					}
 				}//end foreach
-				
 				if ($joined > 0) {
 					Template::set_message('Event(s) joined.','success');
 					Template::redirect(SITE_AREA.'/content/events/');
@@ -142,165 +98,30 @@ class content extends Admin_Controller
 		Template::render();
 	}
 	
-	public function create() {
+	public function delete() {
 		
-		$this->auth->restrict('events.Content.Create');
-		
-		if ($this->input->post('submit'))
-		{
-			if ($insert_id = $this->save_events())
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('events_act_create_events'). ': ' . $insert_id . ' : ' . $this->input->ip_address(), 'events');
-
-				Template::set_message(lang('annoncement_create_success'), 'success');
-				Template::redirect(SITE_AREA .'/content/events');
-			}
-			else
-			{
-				Template::set_message(lang('events_create_failure') . $this->events_model->error, 'error');
-			}
-		}	
-		
-		Assets::add_module_js('events', 'events.js');
-		
-		$this->ckeditor_setting();
-		Template::set('ckeditor_data', $this->data);
-		
-		Template::render();
-	}
-	
-	public function edit() {
-		$this->auth->restrict('events.Content.Edit');
-		$entry_id = xss_clean($this->uri->segment(5));
-
-		$query = $this->events_model->find($entry_id);
-		if ($query->num_rows() == 0) {
-			Template::set_message(lang('events_edit_start_failure') . '<br>Entry does not exist','error');
-			Template::redirect(SITE_AREA.'/content/events/manage');
-		}
-		
-		$query = $query->result_array();
-		$form_data = array(
-			'events_title' => $query['0']['title'],
-			'ck_content' => $query['0']['content'],
-		);
-		Template::set('form_data',$form_data);
-		
-		if ($this->input->post('submit'))
-		{
-			if ($insert_id = $this->save_events('update',$entry_id))
-			{
-				// Log the activity
-				$this->activity_model->log_activity($this->current_user->id, lang('events_act_edit_events'). ': ' . $entry_id . ' : ' . $this->input->ip_address(), 'events');
-
-				Template::set_message(lang('annoncement_edit_success'), 'success');
-				Template::redirect(SITE_AREA .'/content/events/manage');
-			}
-			else
-			{
-				Template::set_message(lang('events_edit_failure') . $this->events_model->error, 'error');
-			}
-		}	
-		
-		Assets::add_module_js('events', 'events.js');
-		
-		$this->ckeditor_setting();
-		Template::set('ckeditor_data', $this->data);
-		Template::set_view('content/create');
-		Template::render();
-		
-	}
-	
-	public function manage() {
-		
-		$this->auth->restrict('events.Content.Edit');
-		$this->auth->restrict('events.Content.Delete');
-		
-		if ($action = $this->input->post('delete')) {
-			if ($action == 'Delete')
-			{
-				$checked = $this->input->post('checked');
-
-				if (is_array($checked) && count($checked))
-				{
-					$result = FALSE;
-					foreach ($checked as $entry_id)
-					{
-						$result = $this->events_model->delete($entry_id);
-					}
-
-					if ($result)
-					{
-						Template::set_message(count($checked) .' '. lang('events_delete_success'), 'success');
-					}
-					else
-					{
-						Template::set_message(lang('events_delete_failure') . $this->events_model->error, 'error');
+		if ($this->input->post('delete')) {
+			if ($checked = $this->input->post('self_checked')) {
+				$deleted_count = 0;
+				foreach($checked as $id) {
+					if ($this->events_model->delete_user_event($this->auth->user_id(),$id) == 0) {
+						//fail
+					} else {
+						$deleted_count++;
+						//log the activity
+						$this->activity_model->log_activity($this->current_user->id, ' delete the event with event id: : ' . $id . ' : ' . $this->input->ip_address(), 'events');
 					}
 				}
-				else
-				{
-					Template::set_message(lang('events_delete_error') . $this->events_model->error, 'error');
+				
+				if ($deleted_count == 0) {
+				} else {
+					Template::set_message($deleted_count . ' event(s) deleted.','success');
 				}
-			}
-		}
-		
-		$this->load->library('pagination');
-		$query = $this->events_model->find_all();
-	
-		$pagination_config = array(
-			'uri_segment' => 5,
-			'per_page' => 10, 
-			'num_links' => 10,
-			'base_url' => site_url(SITE_AREA. '/content/events/index'),
-			'total_rows' => $query->num_rows(),
-		);
-		
-		$this->pagination->initialize($pagination_config);
-		$query = $this->events_model->find_all($pagination_config['per_page'], xss_clean($this->uri->segment(5)))->result_array();
-		
-		Template::set('events_list',$query);
-		Assets::add_module_js('events', 'events.js');
-		Template::set('toolbar_title', 'View events');
-		Template::render();
-	}
-	
-	private function save_events($type='insert',$id=0) {
-		if ($type=='update') {
-			$_POST['id'] = $id; 
-		}
-		
-		$this->form_validation->set_rules('events_title', 'Title','required|xss_clean|trim|max_length[100]|min_length[1]');
-		$this->form_validation->set_rules('ck_content','Content','required');
-		
-		if ($this->form_validation->run() === FALSE) {
-			$form_data = array(
-				'events_title' => xss_clean($this->input->post('events_title')),
-				'ck_content' => xss_clean($this->input->post('ck_content')),
-			);
-			
-			Template::set('form_data',$form_data);
-			return false;
-		}
-		
-		// make sure we only pass in the fields we want
-		$data = array();
-		$data['title'] = $this->input->post('events_title');
-		$data['content'] = $this->input->post('ck_content');
-		$data['created_by'] = $this->auth->user_id();
-		$data['created_at'] = time();
-		
-		if ($type=='insert') {
-			$result = $this->events_model->insert($data);
-			if ($result['affected_rows'] > 0) {
-				return $result['insert_id'];
 			} else {
-				return FALSE;
+				Template::set_message('You must select at least one event to delete.','error');
 			}
-		} else {
-			return $this->events_model->update($id,$data)==0?FALSE:TRUE;
 		}
+		Template::redirect(SITE_AREA.'/content/events/');
 	}
 }
 

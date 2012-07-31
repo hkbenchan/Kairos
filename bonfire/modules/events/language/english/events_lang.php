@@ -7,6 +7,7 @@ $lang['events_create']			= 'Create';
 $lang['events_list']				= 'List';
 $lang['events_new']				= 'Create';
 $lang['events_manage']			= 'Manage';
+$lang['events_approve']			= 'Approve';
 $lang['events_join']			= 'Participate';
 $lang['events_edit_text']			= '<p>Edit this to suit your needs</p>';
 $lang['events_no_Events']		= 'There aren\'t any Events in the system.';

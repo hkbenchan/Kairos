@@ -27,6 +27,8 @@ class Events_model extends BF_Model {
 			return 0;
 		}
 		
+		//$this->db->delete('user_events',array('event_id' => $event_id));
+		
 		$this->db->delete('events', array('event_id' => $event_id));
 		return $this->db->affected_rows();
 	}
@@ -65,6 +67,17 @@ class Events_model extends BF_Model {
 		return $this->db->get('bf_events');
 	}
 	
+	public function find_all_users_by_event($event_id){
+		if (!is_numeric($event_id)) {
+			return null;
+		}
+		
+		return $this->db->select('ue.*')->from('bf_events e')
+				->join('bf_user_events ue','e.event_id = ue.event_id')
+				->where('e.event_id', $event_id)
+				->order_by('ue.uid', 'ASC')->get();
+	}
+	
 	public function insert_user_events($data) {
 		if (count($data) == 0) {
 			return 0;
@@ -97,7 +110,7 @@ class Events_model extends BF_Model {
 			$limit = 1;
 			$offset = 0;
 			return $this->db->from('bf_user_events ue')->join('bf_events e','ue.event_id = e.event_id')
-				->where('uid',$uid)->where('event_id',$event_id)->limit($limit,$offset)->get();
+				->where('ue.uid',$uid)->where('ue.event_id',$event_id)->limit($limit,$offset)->get();
 		}
 		
 	}

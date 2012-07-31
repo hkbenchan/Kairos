@@ -27,6 +27,17 @@ class Migration_Install_user_events_table extends Migration {
 		$this->dbforge->add_key('event_id',TRUE);
 		$this->dbforge->add_key('uid',TRUE);
 		$this->dbforge->create_table('user_events');
+		
+		// foreign key link
+		
+		$queries[] = "ALTER TABLE `bf_user_events` ADD FOREIGN KEY ( `event_id` ) REFERENCES `bf_events` (`event_id`) 
+		ON DELETE CASCADE ON UPDATE NO ACTION ;"
+
+		$queries[] = "ALTER TABLE `bf_user_events` ADD FOREIGN KEY ( `uid` ) REFERENCES `bf_users` (`id`)
+		ON DELETE CASCADE ON UPDATE NO ACTION ;";
+		
+		foreach ($queries as $q)
+			$this->db->query($q);
 	}
 	
 	public function down(){
