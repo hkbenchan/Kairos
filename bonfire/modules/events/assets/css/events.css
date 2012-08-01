@@ -1,0 +1,11 @@
+.start_time{
+	color: #3333DD;
+	font-style: italic;
+	text-decoration: underline;
+}
+
+.end_time{
+	color: #9933BB;
+	font-style: italic;
+	text-decoration: underline;
+}

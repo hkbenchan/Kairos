@@ -75,7 +75,7 @@ class Settings extends Admin_Controller
 			{
 				$this->form_validation->set_rules('smtp_host', 'SMTP Server Address', 'required|trim|strip_tags|xss_clean');
 				$this->form_validation->set_rules('smtp_user', 'SMTP Username', 'trim|strip_tags|xss_clean');
-				$this->form_validation->set_rules('smtp_pass', 'SMTP Password', 'trim|strip_tags|matches_pattern[[A-Za-z0-9!@#\%$^&+=]{2,20}]');
+				$this->form_validation->set_rules('smtp_pass', 'SMTP Password', 'trim|strip_tags');
 				$this->form_validation->set_rules('smtp_port', 'SMTP Port', 'trim|strip_tags|numeric|xss_clean');
 				$this->form_validation->set_rules('smtp_timeout', 'SMTP timeout', 'trim|strip_tags|numeric|xss_clean');
 			}
@@ -360,6 +360,114 @@ class Settings extends Admin_Controller
 
 	}//end preview()
 
+	/**
+	 * Create a new email and send to selected recipents
+	 *
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function create()
+	{
+		
+		$this->load->model('users/user_model');
+		$this->load->library('emailer');
+		$this->load->library('data_keeper');
+		if ($users_id = $this->data_keeper->get_data('emailer')) {
+			$checked = array();
+			foreach($users_id as $id){
+				$checked[] = $id;
+			}
+			Template::set('checked',$checked);
+		}
+
+		if ($this->input->post('submit')){
+			
+			//validate subject, content and recipents
+			$this->form_validation->set_rules('email_subject', 'Email Subject', 'required|xss_clean|trim|min_length[1]|max_length[255]');
+			$this->form_validation->set_rules('email_content', 'Email Content', 'required|trim|min_length[1]');
+			$this->form_validation->set_rules('checked','Users', 'required');
+			
+			if ($this->form_validation->run() === FALSE){
+				Template::set('email_subject',$this->security->xss_clean($this->input->post('email_subject')));
+				Template::set('email_content',$this->input->post('email_content'));
+				Template::set('checked',$this->input->post('checked'));
+			} else {
+				
+				$data = array (
+					'subject'	=> $this->input->post('email_subject'),
+					'message'	=> $this->input->post('email_content'),
+				);
+
+				$checked = $this->input->post('checked');
+				$success_count = 0;
+				if (is_array($checked) && count($checked))
+				{
+					$result = FALSE;
+					foreach ($checked as $user_id)
+					{
+						//get the email from user_id
+						$user = $this->user_model->find($user_id);
+						if ($user != NULL){
+							$data['to'] = $user->email;
+							$result = $this->emailer->send($data,TRUE);
+							if ($result) $success_count++;
+						}
+	
+					}
+
+					if ($result)
+					{
+						$this->data_keeper->clear_data('emailer');
+						Template::set_message($success_count .' '. lang('em_create_email_success'), 'success');
+						Template::redirect(SITE_AREA . '/settings/emailer/queue');
+					}
+					else
+					{
+						Template::set_message(lang('em_create_email_failure') . $this->user_model->error, 'error');
+					}
+				}
+				else
+				{
+					Template::set_message(lang('em_create_email_error') . $this->user_model->error, 'error');
+				}
+					
+			}//end of form_validation
+			
+		}
+		$users = $this->user_model->find_all();
+		Template::set('users',$users);
+		$ckeditor = $this->ckeditor_setting(array());
+		$ckeditor['ckeditor']['id'] = 'email_content';
+		Template::set('ckeditor_data',$ckeditor);
+		Template::set('toolbar_title', lang('em_create_email'));
+		//Template::set_block('sub_nav', 'settings/_sub_nav');
+		Template::render();
+	}//end create()
+	
+	private function ckeditor_setting($data=null) {
+
+		$this->load->helper('ckeditor');
+		
+		//Ckeditor's configuration
+		$data['ckeditor'] = array(
+			
+			'path'	=>	'assets/js/ckeditor',
+			//Optionnal values
+			'config' => array(
+				'toolbar' 	=> 	"Full", 	//Using the Full toolbar
+				'width' 	=> 	"99%",	//Setting a custom width
+				'height' 	=> 	'500px',	//Setting a custom height
+			),
+		);
+		
+		return $data;
+	}
+	
+	
+	
+	
+	
 	//--------------------------------------------------------------------
 }//end class
 

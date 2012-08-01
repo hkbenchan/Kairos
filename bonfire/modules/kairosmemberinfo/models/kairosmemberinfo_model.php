@@ -138,7 +138,9 @@ class Kairosmemberinfo_model extends BF_Model {
 			}
 		}
 		//die();
-		return 1;
+		if ($this->db->affected_rows()>0)
+			return 1;
+		else return FALSE;
 	}
 	
 	public function update($id,$data)
@@ -153,7 +155,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			$user_info = $this->select_user_info($id);
 			if ($user_info->num_rows() <= 0)
 			{
-				return null;
+				return $user_info;
 			}
 			$user_info_rel = $user_info->result();
 			$venture = $user_info_rel[0]->kairosmemberinfo_ownVenture;
@@ -164,7 +166,7 @@ class Kairosmemberinfo_model extends BF_Model {
 			$user_info = $this->db->get_where('bf_user_info', array('entry_id' => $id));
 			if ($user_info->num_rows() <= 0)
 			{
-				return null;
+				return $user_info;
 			}
 			$user_info_rel = $user_info->result();
 			$user_id = $user_info_rel[0]->uid;
@@ -212,7 +214,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		}
 	}
 	
-	public function groupByUniversity($limit = 0, $offset = 0)
+	public function groupByUniversity($limit = null, $offset = null)
 	{
 		
 		if (!is_numeric($limit))
@@ -235,7 +237,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function membersInUniversity($uni_ID, $limit = 0, $offset = 0)
+	public function membersInUniversity($uni_ID, $limit = null, $offset = null)
 	{
 		
 		if (!is_numeric($limit))
@@ -258,7 +260,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function allVentureOwner($limit = 0 , $offset = 0)
+	public function allVentureOwner($limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{
@@ -282,7 +284,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 	}
 	
-	public function groupByIndustry($limit = 0, $offset = 0)
+	public function groupByIndustry($limit = null, $offset = null)
 	{
 		
 		
@@ -307,7 +309,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		
 	}
 	
-	public function membersInIndustry($industry_ID, $limit = 0, $offset = 0)
+	public function membersInIndustry($industry_ID, $limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{
@@ -369,7 +371,7 @@ class Kairosmemberinfo_model extends BF_Model {
 		return $query;
 	}
 	
-	public function getAllUsers($limit = 0 , $offset = 0)
+	public function getAllUsers($limit = null, $offset = null)
 	{
 		if (!is_numeric($limit))
 		{

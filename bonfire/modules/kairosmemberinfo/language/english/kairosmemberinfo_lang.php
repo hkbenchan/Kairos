@@ -4,7 +4,8 @@ $lang['kairosmemberinfo_edit']				= 'Edit';
 $lang['kairosmemberinfo_true']				= 'True';
 $lang['kairosmemberinfo_false']				= 'False';
 $lang['kairosmemberinfo_create']			= 'Create';
-$lang['kairosmemberinfo_list']				= 'List';
+$lang['kairosmemberinfo_list']				= 'View Reports';
+$lang['kairosmemberinfo_manage']			= 'Manage Users';
 $lang['kairosmemberinfo_new_part1']			= 'Part 1';
 $lang['kairosmemberinfo_new_cv']			= 'CV';
 $lang['kairosmemberinfo_edit_text']			= 'Edit this to suit your needs';
@@ -28,8 +29,8 @@ $lang['kairosmemberinfo_delete_confirm']			= 'Are you sure you want to delete th
 $lang['kairosmemberinfo_edit_heading']			= 'Edit KairosMemberInfo';
 $lang['kairosmemberinfo_delete_not_auth']		= 'You do not have permission to delete this record.';
 $lang['kairosmemberinfo_edit_permission_error'] = 'You do not have permission to edit other\'s profile. Redirect back to your profile.';
-$lang['kairosmemberinfo_missing_part_one']		= 'You have not filled in any information, please click New to fill.';
-$lang['kairosmemberinfo_missing_part_two']		= 'You have not uploaded the CV, please click "CV" to upload.';
+$lang['kairosmemberinfo_missing_part_one']		= 'You have not filled in any information, please fill in first.';
+$lang['kairosmemberinfo_missing_part_two']		= 'You have not uploaded the CV, please upload first.';
 $lang['kiarosmemberinfo_missing_part_three']	= 'You have not paid the membership fee or your membership is expired, please contact us for paymnet issue.';
 
 // Activities

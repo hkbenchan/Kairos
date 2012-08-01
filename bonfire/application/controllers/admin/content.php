@@ -53,8 +53,15 @@ class Content extends Admin_Controller
 	 */
 	public function index()
 	{
-		Template::set_view('admin/content/index');
-		Template::render();
+		//Template::set_view('admin/content/index');
+		//Template::render();
+		$this->load->model('kairosmemberinfo/kairosmemberinfo_model');
+		$user = $this->kairosmemberinfo_model->find('user',$this->auth->user_id());
+		if ($user->num_rows() == 0) {
+			Template::redirect(SITE_AREA.'/content/kairosmemberinfo');
+		} else {
+			Template::redirect(SITE_AREA.'/content/announcement');
+		}
 	}//end index()
 
 	//--------------------------------------------------------------------

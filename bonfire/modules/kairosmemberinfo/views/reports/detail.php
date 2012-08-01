@@ -106,10 +106,14 @@
 			<tfoot>
 				<tr>
 					<td>
-					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], '<i class="icon-pencil">&nbsp;</i>' .  'EDIT') ?>
+					<?php echo anchor(SITE_AREA .'/content/kairosmemberinfo/edit/'. $records['uid'], 
+					'<i class="icon-pencil">&nbsp;</i>EDIT',array('class'=>'btn btn-inverse')); ?>
+					<input class="btn btn-primary" type="submit" value="Back" onclick="javascript:history.go(-1);return false;" />
 					</td>
 					<td>
-					<?php echo anchor_popup(SITE_AREA . '/reports/kairosmemberinfo/detail/' . $records['uid'] . '/1', 'Export to CSV'); ?>
+					<?php if (isset($url_csv)) : ?>
+					<input class="btn btn-info" type="submit" value="Export to CSV" onclick="javascript:csv_call('<?php echo $url_csv; ?>');"/>
+					<?php endif; ?>
 					</td>
 				</tr>
 			</tfoot>

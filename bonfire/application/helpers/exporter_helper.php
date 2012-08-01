@@ -6,15 +6,15 @@ if (! function_exists('csvRequest'))
 	{
 		$file;
 		$error;
-		if (!$this->csvExporter($file,$error,$data))
+		$ci =& get_instance();
+		if (csvExporter($file,$error,$data))
 		{
-			echo 'fail';
-			die();
+			$ci->load->helper('download');
+			force_download($name,$file);
 		}
 		else
 		{
-			$this->load->helper('download');
-			force_download($name,$file);
+			die('Fail');
 		}
 	}
 }
@@ -30,8 +30,6 @@ if (! function_exists('csvExporter'))
 
 	function csvExporter(&$file,&$error, $data)
 	{
-		$this->auth->restrict('KairosMemberInfo.Reports.View');
-
 		if (count($data) == 0)
 		{
 			$error = array('message' => 'Data is empty');
@@ -41,9 +39,11 @@ if (! function_exists('csvExporter'))
 		$delimiter = ",";
 		$newline = "\r\n";
 
-		$this->load->dbutil();
+		$ci =& get_instance();
 
-		$file = $this->dbutil->csv_from_result($data,$delimiter,$newline);
+		$ci->load->dbutil();
+
+		$file = $ci->dbutil->csv_from_result($data,$delimiter,$newline);
 		return true;
 	}
 }
