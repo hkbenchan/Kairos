@@ -69,7 +69,7 @@ class Emailer
 	 *
 	 * @var bool
 	 */
-	private $debug = FALSE;
+	private $debug = TRUE;
 
 	/**
 	 * A pointer to the CodeIgniter instance.
@@ -239,7 +239,9 @@ class Emailer
 		{
 			$result['debug'] = $this->ci->email->print_debugger();
 		}
-
+		
+		//debug_r($result['debug']); die();
+		
 		return $result;
 
 	}//end send_email()
@@ -264,8 +266,21 @@ class Emailer
 		//$limit = 33; // 33 emails every 5 minutes = 400 emails/hour.
 		$this->ci->load->library('email');
 
-		$this->ci->email->initialize($this->config);
-
+		//$config['mailtype'] = $this->ci->settings_lib->item('mailtype');
+		$config = $this->ci->settings_model->select('name,value')->find_all_by('module', 'email');
+		$config['wordwrap'] = 'FALSE';
+		$config['newline'] = '\r\n';
+		$this->ci->email->initialize($config);
+		/*	array(
+				'mailtype'=>$this->ci->settings_lib->item('mailtype'),
+				'wordwrap'=>'FALSE',
+				'newline'=>'\r\n',
+				'wrapchar'=>'500',
+				'protocol'=?'SMTP'
+			));
+		*/
+		//$this->ci->email->initialize($this->ci->settings_model->select('name,value')->find_all_by('module', 'email'));
+		
 		// Grab records where success = 0
 		$this->ci->db->limit($limit);
 		$this->ci->db->where('success', 0);
@@ -297,7 +312,7 @@ class Emailer
 			{
 				$this->ci->email->set_alt_message($email->alt_message);
 			}
-
+			
 			$prefix = $this->ci->db->dbprefix;
 
 			if ($this->ci->email->send() === TRUE)
@@ -319,6 +334,8 @@ class Emailer
 				}
 
 			}
+			debug_r($this->ci->email->print_debugger()); die();
+			
 		}//end foreach
 
 		return TRUE;
