@@ -120,7 +120,7 @@ class Events_model extends BF_Model {
 			return 0;
 		}
 		
-		$this->db->where('uid',$data['uid'])->where('event_id',$data['event_id'])->update('bf_user_events');
+		$this->db->where('uid',$data['uid'])->where('event_id',$data['event_id'])->update('bf_user_events',$data);
 		
 		return $this->db->affected_rows();
 	}
@@ -132,5 +132,16 @@ class Events_model extends BF_Model {
 		
 		$this->db->delete('user_events', array('event_id' => $event_id,'uid' => $uid));
 		return $this->db->affected_rows();
+	}
+	
+	public function find_all_users_status($event_id){
+		if (!is_numeric($event_id)){
+			return null;
+		}
+		
+		return $this->db->select('ue.*, u.username, u.email, u.display_name')->from('bf_user_events ue')->join('bf_users u', 'ue.uid = u.id')
+				->where('ue.event_id',$event_id)
+				->order_by('ue.uid')->get();
+		
 	}
 }

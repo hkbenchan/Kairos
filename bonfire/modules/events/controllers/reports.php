@@ -242,6 +242,56 @@ class reports extends Admin_Controller
 	
 	public function approve() {
 		
+		//get all the users in specific events
+		$event_id = (int)$this->uri->segment(5);
+		if ($event_id == 0) {
+			Template::redirect(SITE_AREA.'/reports/events/manage');
+		}
+		
+		if ($this->input->post('process')) {
+			
+			//debug_r($_POST);//die();
+			$id = xss_clean($this->input->post('id'));
+			$approve = xss_clean($this->input->post('approve'));
+			$i = 0;
+			$done = 0;
+			for ($i; $i<count($id); $i++){
+				$user_id = $id[$i];
+				$approve_status = $approve[$i];
+				if (($approve_status == 'Approve') || ($approve_status == 'Reject')) {
+					$data = array();
+					$data['uid'] = $user_id;
+					if ($approve_status == 'Approve')
+						$data['status'] = 'Approved';
+					elseif ($approve_status == 'Reject')
+						$data['status'] = 'Rejected';
+					$data['event_id'] = $event_id;
+					$result = $this->events_model->update_user_event_status($data);
+					if ($result != 0) {
+						$done++;
+					}
+				}
+			}//end for
+			
+			if ($done > 0) {
+				Template::set_message($done.' records updated.', 'success');
+				Template::redirect(SITE_AREA.'/reports/events/manage');
+			} else {
+				Template::set_message('No record updated.','error');
+				Template::redirect(SITE_AREA.'/reports/events/manage');
+			}
+			
+		}
+		
+		$user_list = $this->events_model->find_all_users_status($event_id)->result_array();
+		$event = $this->events_model->find_event($event_id)->first_row('array');
+		if (count($event) == 0) {
+			Template::redirect(SITE_AREA.'/reports/events/manage');
+		}
+		
+		Template::set('event', $event);
+		Template::set('user_list',$user_list);
+		Template::set('toolbar_title', 'Approve users');
 		Template::render();
 	}
 	

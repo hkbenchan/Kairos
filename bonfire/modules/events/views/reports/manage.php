@@ -31,7 +31,9 @@
 			<td><span class="start_time"><?php echo date('Y-m-d H:i',$row['start_time']); ?></span>
 			 to <span class="end_time"><?php echo date('Y-m-d H:i',$row['end_time']); ?></span></td>
 			<td style="width:30%;"><?php echo $row['content']; ?></td>
-			<td><?php echo anchor_popup(SITE_AREA.'/reports/events/records/'.$row['event_id'], $users_list[$row['event_id']]->num_rows()); ?>
+			<td><?php echo anchor_popup(SITE_AREA.'/reports/events/records/'.$row['event_id'], $users_list[$row['event_id']]->num_rows()); ?><br>
+			<?php echo anchor(SITE_AREA.'/reports/events/approve/'.$row['event_id'], 'Approve members'); ?>
+			</td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>
